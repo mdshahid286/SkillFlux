@@ -170,30 +170,38 @@ function HeroSection({ onSeeHowItWorks, onNav, user }) {
           <span className="trust-logo-placeholder" style={{background: 'var(--accent)'}} />
         </div>
       </div>
-      <div className="hero-right futuristic-fade-in">
-        {/* Futuristic animated SVG illustration with new palette */}
-        <svg width="320" height="260" viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg" className="futuristic-card">
-          <defs>
-            <radialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-              <stop offset="0%" stopColor="#e6ded7" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#232323" stopOpacity="0" />
-            </radialGradient>
-            <linearGradient id="orb" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#8d6748" />
-              <stop offset="100%" stopColor="#bfae9e" />
-            </linearGradient>
-          </defs>
-          <ellipse cx="160" cy="130" rx="120" ry="80" fill="url(#glow)">
-            <animate attributeName="rx" values="120;130;120" dur="3s" repeatCount="indefinite" />
-            <animate attributeName="ry" values="80;90;80" dur="3s" repeatCount="indefinite" />
-          </ellipse>
-          <circle cx="160" cy="130" r="60" fill="url(#orb)">
-            <animate attributeName="r" values="60;70;60" dur="2.5s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="160" cy="130" r="30" fill="#fff" fillOpacity="0.07">
-            <animate attributeName="r" values="30;40;30" dur="2s" repeatCount="indefinite" />
-          </circle>
-        </svg>
+      <div className="hero-right futuristic-fade-in hero-orbit-wrap">
+        <div className="orbit-container">
+          <div className="orbit-center">
+            <div className="center-icon">⚡</div>
+            <div className="center-text">AI</div>
+          </div>
+          {[
+            { title: 'Resume Builder', desc: 'Tailored resumes fast', icon: '🧩', color:'#8d6748', radius: 110 },
+            { title: 'Resume Parser', desc: 'Extract skills & gaps', icon: '🧠', color:'#bfae9e', radius: 135 },
+            { title: 'Roadmap', desc: 'Weekly path to goals', icon: '🗺️', color:'#7c5a43', radius: 160 },
+            { title: 'Tech News', desc: 'Stay updated, stay sharp', icon: '📰', color:'#a88d78', radius: 175 },
+          ].map((c, idx) => (
+            <div key={c.title} className={`orbit-node node-${idx}`} style={{ 
+              '--orbit-delay': `${idx * 2}s`,
+              '--orbit-duration': `12s`,
+              '--orbit-radius': `${c.radius}px`,
+              '--accent-color': c.color
+            }}>
+              <div className="node-ring" aria-hidden />
+              <div className="node-core">
+                <div className="node-icon">{c.icon}</div>
+              </div>
+              <div className="node-label">
+                <div className="node-title">{c.title}</div>
+                <div className="node-desc">{c.desc}</div>
+              </div>
+              <div className="node-trail" aria-hidden />
+            </div>
+          ))}
+        </div>
+        <div className="orbit-legend">
+        </div>
       </div>
     </section>
   );
@@ -210,7 +218,7 @@ function QuickNav({ onNav }) {
         position:'absolute', inset:0, background:'radial-gradient(1200px 300px at 20% -10%, #e6ded7 0%, rgba(230,222,215,0) 60%), radial-gradient(1200px 300px at 80% 110%, #bfae9e 0%, rgba(191,174,158,0) 60%)',
         pointerEvents:'none'
       }} />
-      <h2 style={{ textAlign:'center', margin:'0 0 1.6rem 0', color:'var(--brown)', letterSpacing:'0.06em', fontSize:'1.8rem' }}>Quick Actions</h2>
+      <h2 style={{ textAlign:'center', margin:'0 0 1.6rem 0', color:'var(--brown)', letterSpacing:'0.06em', fontSize:'1.8rem', animation:'sectionTitleSlide 1s ease-out' }}>QUICK ACTIONS</h2>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,minmax(260px,1fr))', gap:'1.2rem', maxWidth:1200, margin:'0 auto' }}>
         {[
           { label:'Resume Analysis', path:'/resume' },
@@ -226,11 +234,12 @@ function QuickNav({ onNav }) {
               background:'linear-gradient(180deg,#ffffff 0%, #f7f7f7 100%)',
               border:'1px solid #e0e3ea', borderRadius:'1.4rem', padding:'1.6rem 1.2rem',
               display:'flex', alignItems:'center', justifyContent:'space-between',
-              cursor:'pointer', transition:'transform .25s ease, box-shadow .25s ease, border-color .25s ease',
+              cursor:'pointer', transition:'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
               boxShadow:'0 14px 36px rgba(0,0,0,0.10)',
-              animation:'floaty 6s ease-in-out infinite', animationDelay:`${i * 0.12}s`
+              animation:`quickActionSlide 0.8s ease-out both, floaty 6s ease-in-out infinite`, 
+              animationDelay:`${i * 0.1}s, ${i * 0.12}s`
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-6px) scale(1.03)'; e.currentTarget.style.boxShadow='0 22px 54px rgba(0,0,0,0.18)'; e.currentTarget.style.borderColor = '#d4c8bc'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-8px) scale(1.05)'; e.currentTarget.style.boxShadow='0 25px 60px rgba(0,0,0,0.2)'; e.currentTarget.style.borderColor = '#d4c8bc'; }}
             onMouseLeave={e => { e.currentTarget.style.transform='translateY(0) scale(1.0)'; e.currentTarget.style.boxShadow='0 14px 36px rgba(0,0,0,0.10)'; e.currentTarget.style.borderColor = '#e0e3ea'; }}
           >
             <span style={{ fontWeight:900, color:'#333', letterSpacing:'0.02em', fontSize:'1.05rem' }}>{item.label}</span>
@@ -244,26 +253,23 @@ function QuickNav({ onNav }) {
 
 function HowItWorks() {
   return (
-    <section className="how-it-works" id="how-it-works" style={{position:'relative', padding:'2.6rem 1rem'}}>
-      <style>{`
-        @keyframes stepPop { 0%{transform:scale(0.98); opacity:0} 100%{transform:scale(1); opacity:1} }
-      `}</style>
-      <h2 style={{textAlign:'center', color:'var(--brown)', margin:'0 0 1.2rem 0'}}>How it works</h2>
-      <div className="step-cards" style={{display:'grid', gridTemplateColumns:'repeat(3,minmax(260px,1fr))', gap:'1rem', maxWidth:1200, margin:'0 auto'}}>
-        <div className="step-card" style={{background:'#fff', border:'1px solid #e0e3ea', borderRadius:'1.2rem', padding:'1.2rem', boxShadow:'0 14px 36px rgba(0,0,0,0.08)', animation:'stepPop .5s ease both'}}>
-          <div className="step-number">1</div>
-          <div className="step-title">Onboard with your background</div>
-          <div className="step-desc">Education, role, skills, goals, plus optional resume</div>
+    <section className="hiw" id="how-it-works">
+      <h2 className="hiw-title">HOW IT WORKS</h2>
+      <div className="hiw-grid">
+        <div className="hiw-card">
+          <div className="hiw-num">1</div>
+          <div className="hiw-card-title">Onboard with your background</div>
+          <div className="hiw-card-desc">Education, role, skills, goals, plus optional resume</div>
         </div>
-        <div className="step-card" style={{background:'#fff', border:'1px solid #e0e3ea', borderRadius:'1.2rem', padding:'1.2rem', boxShadow:'0 14px 36px rgba(0,0,0,0.08)', animation:'stepPop .6s ease both'}}>
-          <div className="step-number">2</div>
-          <div className="step-title">AI generates your plan</div>
-          <div className="step-desc">Gemini builds roadmap + analysis + curated resources</div>
+        <div className="hiw-card">
+          <div className="hiw-num">2</div>
+          <div className="hiw-card-title">AI generates your plan</div>
+          <div className="hiw-card-desc">Gemini builds roadmap + analysis + curated resources</div>
         </div>
-        <div className="step-card" style={{background:'#fff', border:'1px solid #e0e3ea', borderRadius:'1.2rem', padding:'1.2rem', boxShadow:'0 14px 36px rgba(0,0,0,0.08)', animation:'stepPop .7s ease both'}}>
-          <div className="step-number">3</div>
-          <div className="step-title">Learn, track, and iterate</div>
-          <div className="step-desc">Follow weekly modules, watch videos, update profile inline</div>
+        <div className="hiw-card">
+          <div className="hiw-num">3</div>
+          <div className="hiw-card-title">Learn, track, and iterate</div>
+          <div className="hiw-card-desc">Follow weekly modules, watch videos, update profile inline</div>
         </div>
       </div>
     </section>
@@ -292,14 +298,13 @@ function FeatureGrid() {
     ) },
   ];
   return (
-    <section className="feature-grid" style={{padding:'2rem 1rem'}}>
-      <style>{`@keyframes stepPop { 0%{transform:scale(0.98); opacity:0} 100%{transform:scale(1); opacity:1} }`}</style>
-      <div style={{display:'grid', gridTemplateColumns:'repeat(3,minmax(260px,1fr))', gap:'1rem', maxWidth:1200, margin:'0 auto'}}>
+    <section className="features">
+      <div className="features-container">
         {features.map((f, i) => (
-          <div className="feature-card futuristic-card" key={i} style={{ animation:'stepPop .5s ease both', animationDelay:`${0.05 * i + 0.1}s`, border:'1px solid #e0e3ea', borderRadius:'1.2rem', padding:'1.2rem', background:'#fff', boxShadow:'0 14px 36px rgba(0,0,0,0.08)'}}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>{f.icon}</div>
-            <div className="feature-title" style={{fontWeight:800, color:'#333'}}>{f.title}</div>
-            <div className="feature-desc" style={{color:'#666'}}>{f.desc}</div>
+          <div className="feature-card enhanced" key={i} style={{ animationDelay:`${0.05 * i + 0.1}s` }}>
+            <div className="feature-icon-row">{f.icon}</div>
+            <div className="feature-title">{f.title}</div>
+            <div className="feature-desc">{f.desc}</div>
           </div>
         ))}
       </div>
