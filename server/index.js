@@ -80,10 +80,17 @@ function extractSkillsFromText(text) {
 // Onboarding endpoint (with resume parsing)
 app.post('/api/onboarding', async (req, res) => {
   try {
-    const { uid, name, email, skills, goals, preference, mode, resumeUrl, linkedin } = req.body;
+    const { uid, name, email, skills, goals, preference, mode, resumeUrl, linkedin, education, role, targetRole } = req.body;
     if (!uid) {
       return res.status(400).json({ error: 'uid is required' });
     }
+    // Load existing profile to preserve history
+    let existingProfile = {};
+    try {
+      const existingDoc = await admin.firestore().collection('users').doc(uid).get();
+      if (existingDoc.exists) existingProfile = existingDoc.data()?.profile || {};
+    } catch (_) {}
+
     let parsedSkills = [];
     if (resumeUrl) {
       // Download and parse resume (assume public URL or local path for demo)
@@ -110,6 +117,20 @@ app.post('/api/onboarding', async (req, res) => {
     if (typeof linkedin === 'string') profile.linkedin = linkedin || '';
     if (typeof name === 'string' && name) profile.name = name;
     if (typeof email === 'string' && email) profile.email = email;
+    if (typeof education === 'string' && education) profile.education = education;
+    if (typeof role === 'string' && role) profile.role = role;
+    if (typeof targetRole === 'string' && targetRole) profile.targetRole = targetRole;
+
+    // Preserve historical skills and record current onboarding submission
+    if (Array.isArray(existingProfile.skills) && existingProfile.skills.length) {
+      profile.pastSkills = existingProfile.skills;
+    }
+    profile.onboarding = {
+      lastSubmittedAt: new Date().toISOString(),
+      goals: typeof goals === 'string' ? goals : existingProfile.goals || '',
+      preference: typeof preference === 'string' ? preference : existingProfile.preference || '',
+      mode: typeof mode === 'string' ? mode : existingProfile.mode || ''
+    };
 
     await admin.firestore().collection('users').doc(uid).set({ profile }, { merge: true });
 
@@ -119,7 +140,30 @@ app.post('/api/onboarding', async (req, res) => {
   }
 });
 
-const AXIOS_TIMEOUT_MS = 20000;
+const AXIOS_TIMEOUT_MS = parseInt(process.env.GEMINI_TIMEOUT_MS || '45000', 10);
+
+// Robust Gemini caller with retries and backoff
+async function callGeminiGenerate(promptText, { retries = 2, timeout = AXIOS_TIMEOUT_MS, model = 'gemini-2.5-flash' } = {}) {
+  if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        { contents: [{ parts: [{ text: promptText }] }] },
+        { timeout }
+      );
+      return res?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } catch (e) {
+      lastErr = e;
+      if (attempt === retries) break;
+      const waitMs = 800 * Math.pow(2, attempt);
+      console.warn(`[gemini] attempt ${attempt + 1} failed: ${e.message}; retrying in ${waitMs}ms`);
+      await new Promise(r => setTimeout(r, waitMs));
+    }
+  }
+  throw lastErr;
+}
 
 // Gemini skill gap analysis and roadmap generation
 app.post('/api/generate-roadmap', async (req, res) => {
@@ -133,10 +177,18 @@ app.post('/api/generate-roadmap', async (req, res) => {
     }
     const profile = userDoc.data().profile || {};
     const userSkills = Array.isArray(profile.skills) ? profile.skills : [];
+    const historicalSkills = Array.isArray(profile.pastSkills) ? profile.pastSkills : [];
     const targetGoal = typeof profile.goals === 'string' ? profile.goals : '';
     const pref = typeof profile.preference === 'string' ? profile.preference : '';
+    const mode = typeof profile.mode === 'string' ? profile.mode : '';
+    const name = typeof profile.name === 'string' ? profile.name : '';
+    const email = typeof profile.email === 'string' ? profile.email : '';
+    const education = typeof profile.education === 'string' ? profile.education : '';
+    const role = typeof profile.role === 'string' ? profile.role : '';
+    const targetRole = typeof profile.targetRole === 'string' ? profile.targetRole : '';
+    const onboardingMeta = typeof profile.onboarding === 'object' && profile.onboarding ? profile.onboarding : {};
 
-    console.log(`[generate-roadmap] profile data: skills=${userSkills.length}, goal="${targetGoal}", pref="${pref}"`);
+    console.log(`[generate-roadmap] profile data: skills=${userSkills.length}, goal="${targetGoal}", pref="${pref}", mode="${mode}", edu="${education}", role="${role}", targetRole="${targetRole}"`);
 
     if (!process.env.GEMINI_API_KEY) {
       console.error('[generate-roadmap] GEMINI_API_KEY not set');
@@ -146,34 +198,29 @@ app.post('/api/generate-roadmap', async (req, res) => {
       return res.json({ skillAnalysis: '', roadmap: fallback });
     }
 
-    let skillAnalysis = '';
+    // Single comprehensive request to Gemini
+    let aiPlanRaw = '';
     try {
-      console.log(`[generate-roadmap] calling Gemini for skill analysis...`);
-      const geminiSkillRes = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        { contents: [{ parts: [{ text: `Analyze these skills: ${userSkills.join(', ')}. Target role: ${targetGoal}. Preferences: ${pref}. What skills are missing? Suggest a learning order.` }] }] },
-        { timeout: AXIOS_TIMEOUT_MS }
-      );
-      console.log(`[generate-roadmap] Gemini skill analysis response status: ${geminiSkillRes.status}`);
-      skillAnalysis = geminiSkillRes?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      console.log(`[generate-roadmap] calling Gemini for comprehensive plan...`);
+      const context = {
+        name,
+        email,
+        education,
+        role,
+        targetRole,
+        goals: targetGoal,
+        skills: userSkills,
+        historicalSkills,
+        learningPreference: pref,
+        learningMode: mode,
+        onboarding: onboardingMeta
+      };
+      const prompt = `You are a senior career mentor. Combine historical background with current onboarding intent to produce a pragmatic transition plan.\n\nUSER CONTEXT JSON: ${JSON.stringify(context)}\n\nReturn STRICT JSON ONLY (no prose, no code fences) with this exact shape:\n{\n  "analysis": {\n    "skillGaps": ["..."],\n    "level": "beginner|intermediate|advanced",\n    "summary": "Summarize current vs target and transition focus"\n  },\n  "tips": ["Actionable tips to move from historicalSkills to goals/targetRole"],\n  "roadmap": [\n    { "week": 1, "weeklyGoal": "...", "topics": ["..."], "projects": ["..."], "assessment": "quiz|mini-project|reflection" }\n  ],\n  "resources": {\n    "recommendedSearchKeywords": ["..."],\n    "books": [{"title":"...","author":"..."}],\n    "courses": [{"title":"...","platform":"...","url":"..."}],\n    "videos": [{"title":"...","url":"..."}]\n  }\n}`;
+      aiPlanRaw = await callGeminiGenerate(prompt, { retries: 2, timeout: AXIOS_TIMEOUT_MS, model: 'gemini-2.5-flash' });
+      console.log(`[generate-roadmap] Gemini comprehensive response received (${aiPlanRaw.length} chars)`);
     } catch (e) {
-      console.warn('[generate-roadmap] skill analysis failed, using empty analysis:', e.message);
-      skillAnalysis = '';
-    }
-
-    let rawRoadmap = '';
-    try {
-      console.log(`[generate-roadmap] calling Gemini for roadmap generation...`);
-      const geminiRoadmapRes = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        { contents: [{ parts: [{ text: `Based on this analysis: ${skillAnalysis}, generate a 6-week roadmap with weekly goals, topics, and mini-projects for ${targetGoal}. Respond strictly as pure JSON array (no prose, no backticks): [{"week":1,"topics":["..."],"projects":["..."]}]` }] }] },
-        { timeout: AXIOS_TIMEOUT_MS }
-      );
-      console.log(`[generate-roadmap] Gemini roadmap response status: ${geminiRoadmapRes.status}`);
-      rawRoadmap = geminiRoadmapRes?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    } catch (e) {
-      console.warn('[generate-roadmap] roadmap generation failed, will use fallback:', e.message);
-      rawRoadmap = '';
+      console.warn('[generate-roadmap] comprehensive plan generation failed:', e.message);
+      aiPlanRaw = '';
     }
 
     function tryParseJson(text) {
@@ -191,24 +238,164 @@ app.post('/api/generate-roadmap', async (req, res) => {
       return null;
     }
 
-    let parsed = tryParseJson(rawRoadmap);
-    if (!Array.isArray(parsed)) {
-      parsed = Array.from({ length: 6 }).map((_, i) => ({ week: i + 1, topics: userSkills.slice(0, Math.min(5, userSkills.length)), projects: [] }));
-      console.warn(`[generate-roadmap] fallback roadmap used uid=${uid}`);
+    // Parse AI plan
+    function tryParseJson(text) {
+      try { return JSON.parse(text); } catch (_) {}
+      const startArr = text.indexOf('[');
+      const endArr = text.lastIndexOf(']');
+      if (startArr !== -1 && endArr !== -1 && endArr > startArr) {
+        try { return JSON.parse(text.slice(startArr, endArr + 1)); } catch (_) {}
+      }
+      const startObj = text.indexOf('{');
+      const endObj = text.lastIndexOf('}');
+      if (startObj !== -1 && endObj !== -1 && endObj > startObj) {
+        try { return JSON.parse(text.slice(startObj, endObj + 1)); } catch (_) {}
+      }
+      return null;
     }
-    const normalized = parsed.map((w, idx) => ({
+
+    let aiPlan = aiPlanRaw ? tryParseJson(aiPlanRaw) : null;
+    if (Array.isArray(aiPlan)) {
+      aiPlan = { analysis: { skillGaps: [], level: '', summary: '' }, tips: [], roadmap: aiPlan, resources: { recommendedSearchKeywords: [], books: [], courses: [], videos: [] } };
+    }
+    if (!aiPlan || typeof aiPlan !== 'object') {
+      const fallbackRoadmap = Array.from({ length: 6 }).map((_, i) => ({ week: i + 1, weeklyGoal: `Foundations Week ${i + 1}`, topics: userSkills.slice(0, Math.min(5, userSkills.length)), projects: [] }));
+      aiPlan = {
+        analysis: { skillGaps: [], level: '', summary: '' },
+        tips: [
+          'Set 45–60 minute focused study blocks daily',
+          'Alternate theory and practice; ship a tiny project each week'
+        ],
+        roadmap: fallbackRoadmap,
+        resources: { recommendedSearchKeywords: userSkills.map(s => `best ${s} course`), books: [], courses: [], videos: [] }
+      };
+      console.warn(`[generate-roadmap] fallback AI plan used uid=${uid}`);
+    }
+
+    const normalized = (Array.isArray(aiPlan.roadmap) ? aiPlan.roadmap : []).map((w, idx) => ({
       week: typeof w.week === 'number' ? w.week : (idx + 1),
       topics: Array.isArray(w.topics) ? w.topics : [],
       projects: Array.isArray(w.projects) ? w.projects : [],
+      weeklyGoal: typeof w.weeklyGoal === 'string' ? w.weeklyGoal : ''
     }));
 
-    await admin.firestore().collection('users').doc(uid).set({ roadmap: normalized, skillAnalysis }, { merge: true });
+    await admin.firestore().collection('users').doc(uid).set({
+      aiPlan: {
+        analysis: aiPlan.analysis || {},
+        tips: Array.isArray(aiPlan.tips) ? aiPlan.tips : [],
+        resources: aiPlan.resources || {}
+      },
+      roadmap: normalized,
+      skillAnalysis: aiPlan.analysis?.summary || ''
+    }, { merge: true });
     console.log(`[generate-roadmap] success uid=${uid} weeks=${normalized.length}`);
-    res.json({ skillAnalysis, roadmap: normalized });
+    res.json({ analysis: aiPlan.analysis || {}, tips: Array.isArray(aiPlan.tips) ? aiPlan.tips : [], roadmap: normalized, resources: aiPlan.resources || {} });
   } catch (err) {
     console.error('[generate-roadmap] Error:', err.message);
     console.error('[generate-roadmap] Error details:', err.response?.data || err.stack);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Lightweight roadmap generation from raw inputs (name, skills, goals) + YouTube videos
+app.post('/api/roadmap', async (req, res) => {
+  try {
+    const { uid = '', name = '', skills = '', goals = '' } = req.body || {};
+
+    // 1) Call Gemini for a 6-week structured roadmap (prefer strict JSON)
+    let weeks = [];
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const prompt = `User details:\nName: ${name}\nSkills: ${skills}\nGoals: ${goals}\n\nReturn STRICT JSON ONLY (no prose, no fences) as an array of 6 weeks in this exact shape: [ { "week": 1, "weeklyGoal": "...", "topics": ["..."], "projects": ["..."] }, ... ]`;
+        const text = await callGeminiGenerate(prompt, { retries: 2, timeout: AXIOS_TIMEOUT_MS, model: 'gemini-2.5-flash' });
+        try {
+          const start = text.indexOf('[');
+          const end = text.lastIndexOf(']');
+          const slice = start !== -1 && end !== -1 && end > start ? text.slice(start, end + 1) : text;
+          const parsed = JSON.parse(slice);
+          if (Array.isArray(parsed)) weeks = parsed.map((w, i) => ({
+            week: typeof w.week === 'number' ? w.week : i + 1,
+            weeklyGoal: typeof w.weeklyGoal === 'string' ? w.weeklyGoal : '',
+            topics: Array.isArray(w.topics) ? w.topics : [],
+            projects: Array.isArray(w.projects) ? w.projects : []
+          }));
+        } catch (_) {}
+      } catch (e) {
+        console.warn('[api/roadmap] Gemini call failed:', e.message);
+      }
+    }
+
+    // Fallback simple 6-week scaffold if Gemini unavailable or parsing failed
+    if (!weeks.length) {
+      const topicsSeed = typeof skills === 'string' && skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : [];
+      weeks = Array.from({ length: 6 }, (_, i) => ({
+        week: i + 1,
+        weeklyGoal: `Focus Week ${i + 1}`,
+        topics: topicsSeed.slice(0, Math.min(3, topicsSeed.length)),
+        projects: [`Mini project for week ${i + 1}`]
+      }));
+    }
+
+    // 2) YouTube videos for first skill + goal
+    const youtubeKey = process.env.YOUTUBE_API_KEY;
+    let videos = [];
+    if (youtubeKey) {
+      try {
+        const firstSkill = (typeof skills === 'string' ? skills : '').split(',')[0] || '';
+        const q = `${firstSkill} ${goals}`.trim() || 'learning roadmap';
+        const yt = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+          params: { q, part: 'snippet', maxResults: 5, type: 'video', key: youtubeKey },
+          timeout: AXIOS_TIMEOUT_MS
+        });
+        videos = (yt.data.items || []).map(item => ({
+          title: item.snippet?.title,
+          description: item.snippet?.description,
+          thumbnail: item.snippet?.thumbnails?.medium?.url,
+          videoUrl: `https://www.youtube.com/watch?v=${item.id?.videoId}`
+        }));
+      } catch (e) {
+        console.warn('[api/roadmap] YouTube fetch failed:', e.message);
+      }
+    }
+
+    // 3) Optionally persist under user
+    if (uid && admin?.firestore) {
+      try {
+        const resources = { general: { ytVideos: videos } };
+        await admin.firestore().collection('users').doc(uid).set({
+          roadmap: weeks,
+          resources,
+          aiPlanUpdatedAt: new Date().toISOString()
+        }, { merge: true });
+      } catch (e) {
+        console.warn('[api/roadmap] persist failed:', e.message);
+      }
+    }
+
+    // Combined response
+    return res.json({ roadmap: weeks, videos });
+  } catch (error) {
+    console.error('[api/roadmap] Error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error generating roadmap and videos' });
+  }
+});
+
+// Fetch saved plan (profile, roadmap, resources) without calling Gemini
+app.get('/api/user/:uid/plan', async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const snap = await admin.firestore().collection('users').doc(uid).get();
+    if (!snap.exists) return res.status(404).json({ error: 'User not found' });
+    const data = snap.data() || {};
+    const profile = data.profile || {};
+    let roadmap = data.roadmap || [];
+    if (typeof roadmap === 'string') { try { roadmap = JSON.parse(roadmap); } catch { roadmap = []; } }
+    const resources = Object.keys(data.resources || {}).length ? data.resources : (data.aiPlan?.resources || {});
+    const aiPlan = data.aiPlan || {};
+    return res.json({ profile, roadmap, resources, aiPlan });
+  } catch (e) {
+    console.error('[api/user/:uid/plan] Error:', e.message);
+    res.status(500).json({ error: 'Failed to fetch saved plan' });
   }
 });
 
