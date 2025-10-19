@@ -22,6 +22,7 @@ export default function Roadmap() {
   
   // Real data from API
   const [userProfile, setUserProfile] = useState(null);
+  const [onboardingData, setOnboardingData] = useState(null);
   const [skillSummary, setSkillSummary] = useState('');
   const [roadmapData, setRoadmapData] = useState([]);
   const [resourcesData, setResourcesData] = useState({});
@@ -54,42 +55,67 @@ export default function Roadmap() {
         weeks = Array.isArray(d.roadmap) ? d.roadmap : [];
         resources = d.resources || {};
         // Set profile and analysis summary from saved plan
-        if (d.profile) setUserProfile(d.profile);
+        if (d.profile) {
+          setUserProfile(d.profile);
+          // Extract onboarding data from profile
+          if (d.profile.onboarding) {
+            console.log('[Roadmap] Found onboarding data:', d.profile.onboarding);
+            setOnboardingData(d.profile.onboarding);
+          } else {
+            console.log('[Roadmap] No onboarding data found in profile');
+          }
+        }
         const summary = d?.aiPlan?.analysis?.summary || '';
         if (summary) setSkillSummary(summary);
       }
 
-      // 2) If no saved roadmap, generate once and persist via /api/roadmap
+      // 2) If no saved roadmap, generate one using the correct endpoint
       if (!weeks.length) {
-        const payload = { uid: currentUid, name: 'John Doe', skills: 'Python, SQL', goals: 'Become a data analyst' };
-        const res = await fetch('http://localhost:5000/api/roadmap', {
+        console.log('[Roadmap] No saved roadmap found, generating new one...');
+        const res = await fetch('http://localhost:5000/api/generate-roadmap', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ uid: currentUid })
         });
         if (res.ok) {
           const data = await res.json();
+          console.log('[Roadmap] Generated roadmap data:', data);
           weeks = Array.isArray(data.roadmap) ? data.roadmap : [];
-          const videos = Array.isArray(data.videos) ? data.videos : [];
-          if (videos.length) resources = { general: { ytVideos: videos } };
+          resources = data.resources || {};
+          // Update profile with generated data
+          if (data.analysis) {
+            setSkillSummary(data.analysis.summary || '');
+          }
+        } else {
+          console.error('[Roadmap] Failed to generate roadmap:', res.status, res.statusText);
         }
       }
 
-      // Fallback to guarantee UI
+      // Fallback to guarantee UI (only if no data at all)
       if (!weeks.length) {
-        weeks = Array.from({ length: 8 }, (_, i) => ({
-          week: i + 1,
-          topics: [`Foundations in Week ${i + 1}`],
-          projects: [`Mini-Project for Week ${i + 1}`]
-        }));
+        console.warn('[Roadmap] No roadmap data available, showing empty state');
+        weeks = [];
       }
       // Show at most 8 weeks
       setRoadmapData(weeks.slice(0, 8));
 
       setResourcesData(resources);
 
-      // Minimal user summary and local progress
-      setUserProfile(prev => prev || { role: 'Student', targetRole: 'Data Analyst', skills: ['Python', 'SQL'] });
+      // Set user profile from saved data or keep existing
+      if (!userProfile) {
+        setUserProfile({ role: 'Student', targetRole: 'Data Analyst', skills: ['Python', 'SQL'] });
+      }
+      
+      // Set onboarding data fallback if not available
+      if (!onboardingData) {
+        setOnboardingData({ 
+          primarySkill: 'General Skills', 
+          careerAspiration: 'Data Analyst',
+          learningGoal: 'Career Development',
+          experienceLevel: 'intermediate',
+          learningStyle: 'mixed'
+        });
+      }
       setModuleProgress(loadLocalProgress(currentUid));
     } catch (e) {
       setError('Failed to load roadmap data: ' + e.message);
@@ -165,6 +191,46 @@ export default function Roadmap() {
     ]
   }));
 
+  // Generate YouTube video suggestions based on roadmap topics
+  const generateYouTubeSuggestions = () => {
+    const suggestions = [];
+    const primarySkill = onboardingData?.primarySkill || 'programming';
+    const experienceLevel = onboardingData?.experienceLevel || 'intermediate';
+    
+    // Get all unique topics from roadmap
+    const allTopics = Array.from(new Set(
+      roadmapData.flatMap(week => [
+        ...(week.topics || []),
+        ...(week.projects || [])
+      ])
+    ));
+    
+    // Generate video suggestions for each topic
+    allTopics.forEach(topic => {
+      const searchTerms = [
+        `${topic} tutorial`,
+        `${topic} ${experienceLevel}`,
+        `${primarySkill} ${topic}`,
+        `learn ${topic}`
+      ];
+      
+      searchTerms.forEach(term => {
+        suggestions.push({
+          type: "VIDEO",
+          title: `${term.charAt(0).toUpperCase() + term.slice(1)} - YouTube Search`,
+          source: "YouTube",
+          description: `Search for "${term}" on YouTube to find relevant tutorials`,
+          url: `https://www.youtube.com/results?search_query=${encodeURIComponent(term)}`,
+          thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", // Placeholder
+          isSearchSuggestion: true,
+          searchTerm: term
+        });
+      });
+    });
+    
+    return suggestions;
+  };
+
   // Transform resources data (support both topic-grouped and flat aiPlan.resources)
   const topicEntries = Object.entries(resourcesData).filter(([key]) => typeof resourcesData[key] === 'object' && !Array.isArray(resourcesData[key]));
   const flatVideos = Array.isArray(resourcesData?.videos) ? resourcesData.videos : [];
@@ -225,7 +291,9 @@ export default function Roadmap() {
         url: repo.url,
         label: repo.label
       }))
-    ])
+    ]),
+    // Generated YouTube suggestions based on roadmap topics
+    ...generateYouTubeSuggestions()
   ];
 
   // Calculate progress data based on real module completion
@@ -313,19 +381,40 @@ export default function Roadmap() {
   return (
     <div className="roadmap-page">
       <div className="roadmap-container">
-        <h1 className="roadmap-title">AI LEARNING PLAN</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h1 className="roadmap-title">AI LEARNING PLAN</h1>
+          <button 
+            onClick={() => fetchRoadmapData(uid)}
+            style={{
+              background: 'var(--brown)',
+              color: 'white',
+              border: 'none',
+              padding: '0.8rem 1.5rem',
+              borderRadius: '0.8rem',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '0.9rem'
+            }}
+          >
+            🔄 Refresh Roadmap
+          </button>
+        </div>
         
         {/* User Summary */}
         <div className="user-summary-card">
           <div className="user-summary-content">
             <div className="user-role">
               <span className="current-role">Current: {userProfile?.role || '—'}</span>
-              <span className="target-role">Target: {userProfile?.targetRole || '—'}</span>
+              <span className="target-role">Target: {onboardingData?.careerAspiration || userProfile?.targetRole || '—'}</span>
             </div>
             <div className="skills-tags">
-              {(userProfile?.skills || []).slice(0, 4).map((skill, index) => (
-                <span key={index} className="skill-tag">{skill}</span>
-              ))}
+              {onboardingData?.primarySkill ? (
+                <span className="skill-tag">{onboardingData.primarySkill}</span>
+              ) : (
+                (userProfile?.skills || []).slice(0, 4).map((skill, index) => (
+                  <span key={index} className="skill-tag">{skill}</span>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -365,139 +454,173 @@ export default function Roadmap() {
         {/* Content based on active tab */}
         {activeTab === 'roadmap' && (
           <div className="roadmap-content">
-            <div className="weeks-grid">
-              {transformedWeeks.map((week, index) => {
-                const weekData = roadmapData[index];
-                const weekProgress = week.modules.map((_, moduleIndex) => getModuleStatus(index, moduleIndex));
-                const weekCompletion = weekProgress.filter(p => p.status === "Completed").length;
-                const weekPercentage = week.modules.length > 0 ? Math.floor((weekCompletion / week.modules.length) * 100) : 0;
-                
-          return (
-                  <div key={index} className="week-card">
-                    <div className="week-header" onClick={() => toggleWeek(index)}>
-                      <div className="week-title-section">
-                        <h3 className="week-title">Week {week.week}</h3>
-                        {week.weeklyGoal ? (
-                          <div className="week-progress-badge" style={{ background: 'var(--brown)' }}>{week.weeklyGoal}</div>
-                        ) : (
-                          <div className="week-progress-badge">{weekPercentage}%</div>
-                        )}
-                  </div>
-                      <div aria-hidden className="expand-arrow" style={{ color: 'var(--brown)' }} onClick={(e) => { e.stopPropagation(); openWeekModal(index); }}>▼</div>
+            {roadmapData.length === 0 ? (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '3rem 2rem',
+                background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+                borderRadius: '1.2rem',
+                border: '2px dashed var(--accent)',
+                marginBottom: '2rem'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
+                <h3 style={{ color: 'var(--brown)', marginBottom: '1rem' }}>No Roadmap Available</h3>
+                <p style={{ color: '#666', marginBottom: '2rem', lineHeight: '1.6' }}>
+                  Complete the onboarding process to generate your personalized learning roadmap.
+                </p>
+                <button 
+                  onClick={() => window.location.href = '/onboarding'}
+                  style={{
+                    background: 'var(--brown)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '1rem 2rem',
+                    borderRadius: '0.8rem',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '1rem'
+                  }}
+                >
+                  Complete Onboarding →
+                </button>
               </div>
-
-                    {expanded[index] && (
-                      <div className="week-details">
-                        <div style={{ display:'flex', justifyContent:'flex-end' }}>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); toggleWeek(index); }}
-                            style={{ background:'transparent', border:'none', color:'#666', cursor:'pointer', fontSize:'1rem' }}
-                            aria-label="Close week details"
-                          >✕</button>
-                        </div>
-                        {/* Week Overview */}
-                        <div className="week-overview">
-                          <h4>Week {week.week} Overview</h4>
-                          <p className="week-description">
-                            {weekData?.description || `Focus on ${weekData?.topics?.join(', ') || 'core concepts'} this week.`}
-                          </p>
-                          <div className="week-stats">
-                            <span className="stat-item">
-                              <strong>{week.modules.length}</strong> modules
-                            </span>
-                            <span className="stat-item">
-                              <strong>{weekCompletion}</strong> completed
-                            </span>
-                            <span className="stat-item">
-                              <strong>{weekData?.topics?.length || 0}</strong> topics
-                            </span>
+            ) : (
+              <>
+                <div className="weeks-grid">
+                  {transformedWeeks.map((week, index) => {
+                    const weekData = roadmapData[index];
+                    const weekProgress = week.modules.map((_, moduleIndex) => getModuleStatus(index, moduleIndex));
+                    const weekCompletion = weekProgress.filter(p => p.status === "Completed").length;
+                    const weekPercentage = week.modules.length > 0 ? Math.floor((weekCompletion / week.modules.length) * 100) : 0;
+                    
+                    return (
+                      <div key={index} className="week-card">
+                        <div className="week-header" onClick={() => toggleWeek(index)}>
+                          <div className="week-title-section">
+                            <h3 className="week-title">Week {week.week}</h3>
+                            {week.weeklyGoal ? (
+                              <div className="week-progress-badge" style={{ background: 'var(--brown)' }}>{week.weeklyGoal}</div>
+                            ) : (
+                              <div className="week-progress-badge">{weekPercentage}%</div>
+                            )}
                           </div>
+                          <div aria-hidden className="expand-arrow" style={{ color: 'var(--brown)' }} onClick={(e) => { e.stopPropagation(); openWeekModal(index); }}>▼</div>
                         </div>
 
-                        {/* Modules */}
-                        <div className="week-modules">
-                          <h4>Learning Modules</h4>
-                          {week.modules.map((module, moduleIndex) => {
-                            const moduleStatus = getModuleStatus(index, moduleIndex);
-                            return (
-                              <div key={moduleIndex} className="module-card">
-                                <div className="module-info">
-                                  <div className="module-header">
-                                    <span className="module-name">{module.name}</span>
-                                    <span 
-                                      className="module-status" 
-                                      style={{ color: getStatusColor(moduleStatus.status) }}
-                                    >
-                                      {moduleStatus.status}
-                                    </span>
-                                  </div>
-                                  <div className="module-description">
-                                    {module.name.includes('SQL') && 'Learn database querying fundamentals'}
-                                    {module.name.includes('Python') && 'Master Python programming basics'}
-                                    {module.name.includes('Data') && 'Explore data analysis techniques'}
-                                    {module.name.includes('Project') && 'Apply your skills in real-world scenarios'}
-                                    {!module.name.includes('SQL') && !module.name.includes('Python') && !module.name.includes('Data') && !module.name.includes('Project') && 'Build practical skills and knowledge'}
-                      </div>
-                                </div>
-                                <div className="module-actions">
-                                  <div className="progress-bar">
-                                    <div 
-                                      className="progress-fill" 
-                                      style={{ 
-                                        width: `${moduleStatus.progress}%`,
-                                        backgroundColor: getStatusColor(moduleStatus.status)
-                                      }}
-                                    ></div>
-                                  </div>
-                                  {moduleStatus.status !== "Completed" && (
-                                    <button 
-                                      className="mark-done-btn"
-                                      onClick={() => markModuleDone(index, moduleIndex, module.name)}
-                                    >
-                                      Mark Done
-                                    </button>
-                                  )}
-                                  {moduleStatus.status === "Completed" && (
-                                    <div className="completed-badge">
-                                      ✓ Completed
-                    </div>
-                  )}
-                              </div>
-                                  </div>
-                            );
-                          })}
-                                  </div>
-
-                        {/* Week Resources */}
-                        {weekData?.topics && (
-                          <div className="week-resources">
-                            <h4>Week Resources</h4>
-                            <div className="resource-tags">
-                              {weekData.topics.map((topic, topicIndex) => (
-                                <span key={topicIndex} className="resource-tag">
-                                  {topic}
-                                </span>
-                                ))}
-                              </div>
-                          </div>
-                        )}
+                        {expanded[index] && (
+                          <div className="week-details">
+                            <div style={{ display:'flex', justifyContent:'flex-end' }}>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleWeek(index); }}
+                                style={{ background:'transparent', border:'none', color:'#666', cursor:'pointer', fontSize:'1rem' }}
+                                aria-label="Close week details"
+                              >✕</button>
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-            
-            {/* Overall Progress Indicator */}
-            <div className="overall-progress">
-              <div className="progress-summary">
-                <span>Overall Progress: {progressData.roadmapCompletion}%</span>
-                <span>{completedModules} of {totalModules} modules completed</span>
-              </div>
-              <div className="progress-track">
-                <div className="progress-indicator" style={{ left: `${progressData.roadmapCompletion}%` }}></div>
+                            {/* Week Overview */}
+                            <div className="week-overview">
+                              <h4>Week {week.week} Overview</h4>
+                              <p className="week-description">
+                                {weekData?.description || `Focus on ${weekData?.topics?.join(', ') || 'core concepts'} this week.`}
+                              </p>
+                              <div className="week-stats">
+                                <span className="stat-item">
+                                  <strong>{week.modules.length}</strong> modules
+                                </span>
+                                <span className="stat-item">
+                                  <strong>{weekCompletion}</strong> completed
+                                </span>
+                                <span className="stat-item">
+                                  <strong>{weekData?.topics?.length || 0}</strong> topics
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Modules */}
+                            <div className="week-modules">
+                              <h4>Learning Modules</h4>
+                              {week.modules.map((module, moduleIndex) => {
+                                const moduleStatus = getModuleStatus(index, moduleIndex);
+                                return (
+                                  <div key={moduleIndex} className="module-card">
+                                    <div className="module-info">
+                                      <div className="module-header">
+                                        <span className="module-name">{module.name}</span>
+                                        <span 
+                                          className="module-status" 
+                                          style={{ color: getStatusColor(moduleStatus.status) }}
+                                        >
+                                          {moduleStatus.status}
+                                        </span>
+                                      </div>
+                                      <div className="module-description">
+                                        {module.name.includes('SQL') && 'Learn database querying fundamentals'}
+                                        {module.name.includes('Python') && 'Master Python programming basics'}
+                                        {module.name.includes('Data') && 'Explore data analysis techniques'}
+                                        {module.name.includes('Project') && 'Apply your skills in real-world scenarios'}
+                                        {!module.name.includes('SQL') && !module.name.includes('Python') && !module.name.includes('Data') && !module.name.includes('Project') && 'Build practical skills and knowledge'}
+                                      </div>
+                                    </div>
+                                    <div className="module-actions">
+                                      <div className="progress-bar">
+                                        <div 
+                                          className="progress-fill" 
+                                          style={{ 
+                                            width: `${moduleStatus.progress}%`,
+                                            backgroundColor: getStatusColor(moduleStatus.status)
+                                          }}
+                                        ></div>
+                                      </div>
+                                      {moduleStatus.status !== "Completed" && (
+                                        <button 
+                                          className="mark-done-btn"
+                                          onClick={() => markModuleDone(index, moduleIndex, module.name)}
+                                        >
+                                          Mark Done
+                                        </button>
+                                      )}
+                                      {moduleStatus.status === "Completed" && (
+                                        <div className="completed-badge">
+                                          ✓ Completed
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {/* Week Resources */}
+                            {weekData?.topics && (
+                              <div className="week-resources">
+                                <h4>Week Resources</h4>
+                                <div className="resource-tags">
+                                  {weekData.topics.map((topic, topicIndex) => (
+                                    <span key={topicIndex} className="resource-tag">
+                                      {topic}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-            </div>
+                
+                {/* Overall Progress Indicator */}
+                <div className="overall-progress">
+                  <div className="progress-summary">
+                    <span>Overall Progress: {progressData.roadmapCompletion}%</span>
+                    <span>{completedModules} of {totalModules} modules completed</span>
+                  </div>
+                  <div className="progress-track">
+                    <div className="progress-indicator" style={{ left: `${progressData.roadmapCompletion}%` }}></div>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Expanded Week Modal */}
             {expandedWeek !== null && (
@@ -575,6 +698,13 @@ export default function Roadmap() {
 
         {activeTab === 'resources' && (
           <div className="resources-content">
+            <div className="resources-header">
+              <h3 style={{ color: 'var(--brown)', marginBottom: '1rem' }}>Learning Resources</h3>
+              <p style={{ color: '#666', marginBottom: '2rem' }}>
+                Curated resources based on your roadmap topics: <strong>{onboardingData?.primarySkill || 'General Skills'}</strong>
+              </p>
+            </div>
+            
             <div className="resources-filters">
               <select className="filter-dropdown">
                 <option>All Types</option>
@@ -597,21 +727,144 @@ export default function Roadmap() {
             
             <div className="resources-grid">
               {transformedResources.map((resource, index) => (
-                <div key={index} className="resource-card">
-                  <div className="resource-type">{resource.type}</div>
+                <div key={index} className="resource-card" style={{
+                  background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+                  border: '1px solid #e0e3ea',
+                  borderRadius: '1rem',
+                  padding: '1.5rem',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                  transition: 'all 0.3s ease',
+                  position: 'relative'
+                }}>
+                  <div className="resource-type" style={{
+                    position: 'absolute',
+                    top: '1rem',
+                    right: '1rem',
+                    background: resource.type === 'VIDEO' ? '#ff0000' : 
+                               resource.type === 'COURSE' ? 'var(--brown)' : 
+                               resource.type === 'BOOK' ? '#8d6748' : '#6b7280',
+                    color: 'white',
+                    padding: '0.3rem 0.8rem',
+                    borderRadius: '1rem',
+                    fontSize: '0.8rem',
+                    fontWeight: '600'
+                  }}>
+                    {resource.type}
+                  </div>
+                  
+                  {resource.isSearchSuggestion && (
+                    <div style={{
+                      background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%)',
+                      color: 'white',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '0.5rem',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      marginBottom: '1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      🔍 YouTube Search Suggestion
+                    </div>
+                  )}
+                  
                   <div className="resource-content">
-                    <h4 className="resource-title">{resource.title}</h4>
-                    <p className="resource-source">{resource.source}</p>
-                    <p className="resource-description">{resource.description}</p>
+                    <h4 className="resource-title" style={{
+                      color: 'var(--brown)',
+                      fontSize: '1.1rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                      lineHeight: '1.4'
+                    }}>
+                      {resource.title}
+                    </h4>
+                    <p className="resource-source" style={{
+                      color: '#8d6748',
+                      fontSize: '0.9rem',
+                      fontWeight: '500',
+                      marginBottom: '0.8rem'
+                    }}>
+                      {resource.source}
+                    </p>
+                    <p className="resource-description" style={{
+                      color: '#666',
+                      fontSize: '0.95rem',
+                      lineHeight: '1.5',
+                      marginBottom: '1.2rem'
+                    }}>
+                      {resource.description}
+                    </p>
                     {resource.url && (
-                      <a href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-link">
-                        View Resource
+                      <a 
+                        href={resource.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="resource-link"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          background: resource.isSearchSuggestion ? 
+                            'linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%)' : 
+                            'var(--brown)',
+                          color: 'white',
+                          padding: '0.8rem 1.5rem',
+                          borderRadius: '0.8rem',
+                          textDecoration: 'none',
+                          fontWeight: '600',
+                          fontSize: '0.9rem',
+                          transition: 'all 0.3s ease',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        }}
+                        onMouseOver={(e) => {
+                          e.target.style.transform = 'translateY(-2px)';
+                          e.target.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                        }}
+                      >
+                        {resource.isSearchSuggestion ? '🔍 Search YouTube' : '📖 View Resource'}
                       </a>
                     )}
                   </div>
                 </div>
               ))}
             </div>
+            
+            {transformedResources.length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: '3rem 2rem',
+                background: 'linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)',
+                borderRadius: '1.2rem',
+                border: '2px dashed var(--accent)',
+                marginTop: '2rem'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
+                <h3 style={{ color: 'var(--brown)', marginBottom: '1rem' }}>No Resources Available</h3>
+                <p style={{ color: '#666', marginBottom: '2rem', lineHeight: '1.6' }}>
+                  Complete the onboarding process to generate your personalized learning resources.
+                </p>
+                <button 
+                  onClick={() => window.location.href = '/onboarding'}
+                  style={{
+                    background: 'var(--brown)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '1rem 2rem',
+                    borderRadius: '0.8rem',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '1rem'
+                  }}
+                >
+                  Complete Onboarding →
+                </button>
+              </div>
+            )}
           </div>
         )}
 

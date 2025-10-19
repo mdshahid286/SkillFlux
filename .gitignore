@@ -1,51 +1,35 @@
-# Dependencies
 node_modules/
+build/
+dist/
+.out/
+.next/
+coverage/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Build outputs
-dist/
-build/
-coverage/
-.next/
-.out/
-.cache/
-.tmp/
-tmp/
-temp/
-
-# Logs
-logs/
-*.log
-
-# Environment files
 .env
-.env.*.local
-client/.env
-server/.env
+.env.*
+!.env.example
 
-# Service credentials / secrets
-server/serviceAccountKey.json
-
-# OS / Editor files
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# CRA / tooling
-client/.eslintcache
-
-# Misc
 *.local
+*.swp
 
-.clinerules/byterover-rules.md
-.kilocode/rules/byterover-rules.md
-.roo/rules/byterover-rules.md
-.windsurf/rules/byterover-rules.md
-.cursor/rules/byterover-rules.mdc
-.kiro/steering/byterover-rules.md
-.qoder/rules/byterover-rules.md
-.augment/rules/byterover-rules.md
+.cursor/
+.cursorignore
+
+.cache/
+.eslintcache
+
+# Service account keys and sensitive files
+server/serviceAccountKey.json
+*.json
+!package.json
+!package-lock.json

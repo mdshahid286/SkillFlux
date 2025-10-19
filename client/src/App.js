@@ -7,10 +7,12 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import ResumeAnalysis from './pages/ResumeAnalysis';
 import ResumeResult from './pages/ResumeResult';
-// Stubs for Resume Builder and Tech News can route to existing components if needed
+import TechNews from './pages/TechNews';
+// Stubs for Resume Builder can route to existing components if needed
 import Roadmap from './pages/Roadmap';
 // Removed LearningHub and Progress pages
 // Profile page removed; using in-nav modal instead
+import Aptitude from './pages/Aptitude';
 
 function Navbar({ onSeeHowItWorks, onNav, user }) {
   const [open, setOpen] = React.useState(false); // quick dropdown (unused now)
@@ -171,36 +173,53 @@ function HeroSection({ onSeeHowItWorks, onNav, user }) {
         </div>
       </div>
       <div className="hero-right futuristic-fade-in hero-orbit-wrap">
-        <div className="orbit-container">
-          <div className="orbit-center">
-            <div className="center-icon">⚡</div>
-            <div className="center-text">AI</div>
-          </div>
-          {[
-            { title: 'Resume Builder', desc: 'Tailored resumes fast', icon: '🧩', color:'#8d6748', radius: 110 },
-            { title: 'Resume Parser', desc: 'Extract skills & gaps', icon: '🧠', color:'#bfae9e', radius: 135 },
-            { title: 'Roadmap', desc: 'Weekly path to goals', icon: '🗺️', color:'#7c5a43', radius: 160 },
-            { title: 'Tech News', desc: 'Stay updated, stay sharp', icon: '📰', color:'#a88d78', radius: 175 },
-          ].map((c, idx) => (
-            <div key={c.title} className={`orbit-node node-${idx}`} style={{ 
-              '--orbit-delay': `${idx * 2}s`,
-              '--orbit-duration': `12s`,
-              '--orbit-radius': `${c.radius}px`,
-              '--accent-color': c.color
-            }}>
-              <div className="node-ring" aria-hidden />
-              <div className="node-core">
-                <div className="node-icon">{c.icon}</div>
-              </div>
-              <div className="node-label">
-                <div className="node-title">{c.title}</div>
-                <div className="node-desc">{c.desc}</div>
-              </div>
-              <div className="node-trail" aria-hidden />
+        <div className="hero-visual-bg">
+          {/* Layered animated blobs for depth */}
+          <svg width="340" height="340" viewBox="0 0 340 340" fill="none" className="hero-blob-bg blob1">
+            <defs><radialGradient id="blobGradient1" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#e6ded7" stopOpacity="0.78"/><stop offset="75%" stopColor="#bfae9e" stopOpacity="0.38"/><stop offset="100%" stopColor="#a89f91" stopOpacity="0.14"/></radialGradient></defs>
+            <path>
+              <animate attributeName="d" dur="8s" repeatCount="indefinite"
+                values="M170,320 Q250,290 310,170 Q250,60 170,40 Q90,60 30,170 Q90,290 170,320Z;
+                        M170,320 Q255,265 320,170 Q255,60 170,60 Q85,60 20,170 Q85,265 170,320Z;
+                        M170,320 Q250,290 310,170 Q250,60 170,40 Q90,60 30,170 Q90,290 170,320Z"/>
+            </path>
+            <path d="M170,320 Q250,290 310,170 Q250,60 170,40 Q90,60 30,170 Q90,290 170,320Z" fill="url(#blobGradient1)"/>
+          </svg>
+          <svg width="340" height="340" viewBox="0 0 340 340" fill="none" className="hero-blob-bg blob2">
+            <defs><radialGradient id="blobGradient2" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#bfae9e" stopOpacity="0.15"/><stop offset="80%" stopColor="#8d6748" stopOpacity="0.04"/><stop offset="100%" stopColor="#fff" stopOpacity="0.07"/></radialGradient></defs>
+            <path>
+              <animate attributeName="d" dur="9.5s" repeatCount="indefinite" values="M170,320 Q230,290 300,170 Q240,60 170,60 Q100,60 40,170 Q100,290 170,320Z; M170,320 Q250,300 300,170 Q240,60 170,60 Q110,60 30,170 Q110,275 170,320Z; M170,320 Q230,290 300,170 Q240,60 170,60 Q100,60 40,170 Q100,290 170,320Z"/>
+            </path>
+            <path d="M170,320 Q230,290 300,170 Q240,60 170,60 Q100,60 40,170 Q100,290 170,320Z" fill="url(#blobGradient2)"/>
+          </svg>
+          {/* AI badge with glass and shine sweep */}
+          <div className="ai-badge-glow">
+            <div className="ai-badge-inner">
+              <span role="img" aria-label="AI" className="flash-icon">⚡</span>
+              <span className="ai-badge-label">AI</span>
             </div>
-          ))}
-        </div>
-        <div className="orbit-legend">
+            {/* Shine sweep */}
+            <div className="shine-sweep badge-shine" />
+          </div>
+          {/* Floating feature icons on glass, each with a shine sweep */}
+          <div className="hero-feature-icons">
+            <div className="feature-icon-card">
+              <span className="icon-emoji">🧩</span>
+              <div className="shine-sweep icon-shine" />
+            </div>
+            <div className="feature-icon-card">
+              <span className="icon-emoji">🧠</span>
+              <div className="shine-sweep icon-shine" />
+            </div>
+            <div className="feature-icon-card">
+              <span className="icon-emoji">🗺️</span>
+              <div className="shine-sweep icon-shine" />
+            </div>
+            <div className="feature-icon-card">
+              <span className="icon-emoji">📰</span>
+              <div className="shine-sweep icon-shine" />
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -348,14 +367,38 @@ function Footer() {
 
 function OnboardingPage({ user }) {
   const [form, setForm] = useState({
-    goals: '',
-    preference: '',
-    mode: '',
+    primarySkill: '',
+    customSkill: '',
+    learningGoal: '',
+    experienceLevel: '',
+    careerAspiration: '',
+    learningStyle: '',
   });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
+
+  const skillOptions = [
+    'React', 'Data Science', 'Cloud Computing', 'UI/UX Design', 'Python', 'JavaScript', 
+    'Machine Learning', 'DevOps', 'Mobile Development', 'Web Development', 'Cybersecurity',
+    'Blockchain', 'AI/ML', 'Full Stack Development', 'Backend Development', 'Other'
+  ];
+
+  const goalOptions = [
+    'Get a new job', 'Career switch', 'Build personal projects', 'Strengthen fundamentals',
+    'Get promoted', 'Start freelancing', 'Learn for fun', 'Other'
+  ];
+
+  const experienceLevels = ['Beginner', 'Intermediate', 'Advanced'];
+  
+  const learningStyles = [
+    { value: 'video', label: 'Video-based', icon: '🎬' },
+    { value: 'reading', label: 'Reading', icon: '📚' },
+    { value: 'hands-on', label: 'Hands-on Projects', icon: '🛠️' },
+    { value: 'mixed', label: 'Mixed', icon: '🎯' }
+  ];
 
   useEffect(() => {
     if (!user) {
@@ -368,21 +411,40 @@ function OnboardingPage({ user }) {
     setForm(f => ({ ...f, [name]: value }));
   };
 
+  const handleNext = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    // TODO: Replace with real Firebase Auth user
     const uid = user?.uid || 'testuser1';
+    
+    // Prepare form data with custom skill handling
+    const formData = { ...form };
+    if (form.primarySkill === 'Other' && form.customSkill) {
+      formData.primarySkill = form.customSkill;
+    }
+    delete formData.customSkill; // Remove the custom skill field as it's now merged
+    
     try {
       const res = await fetch('http://localhost:5000/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, uid })
+        body: JSON.stringify({ ...formData, uid })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save onboarding data');
-      // trigger roadmap generation then navigate to roadmap page
+      
       try {
         const gen = await fetch('http://localhost:5000/api/generate-roadmap', {
           method: 'POST',
@@ -406,64 +468,639 @@ function OnboardingPage({ user }) {
   };
 
   if (submitted) {
-    return <div className="onboarding-success">Your personalized roadmap is ready! 🚀</div>;
+    return (
+      <div style={{
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '2rem'
+      }}>
+        <div style={{
+          background: '#fff',
+          borderRadius: '2rem',
+          padding: '3rem',
+          textAlign: 'center',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+          maxWidth: '500px',
+          width: '100%'
+        }}>
+          <div style={{fontSize: '4rem', marginBottom: '1rem'}}>🚀</div>
+          <h2 style={{color: '#333', marginBottom: '1rem', fontSize: '2rem'}}>Your personalized roadmap is ready!</h2>
+          <p style={{color: '#666', fontSize: '1.1rem'}}>Let's start your learning journey together.</p>
+        </div>
+      </div>
+    );
   }
 
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="onboarding-step">
+            <div className="step-icon">🎯</div>
+            <h3 className="step-title">What skill would you like to learn next?</h3>
+            <p className="step-subtitle">Choose your primary focus area</p>
+            <div className="skill-grid">
+              {skillOptions.map(skill => (
+                <button
+                  key={skill}
+                  type="button"
+                  className={`skill-option ${form.primarySkill === skill ? 'selected' : ''}`}
+                  onClick={() => setForm(f => ({ ...f, primarySkill: skill, customSkill: skill === 'Other' ? f.customSkill : '' }))}
+                >
+                  {skill}
+                </button>
+              ))}
+            </div>
+            {form.primarySkill === 'Other' && (
+              <div className="custom-skill-container">
+                <input
+                  type="text"
+                  name="customSkill"
+                  value={form.customSkill}
+                  onChange={handleChange}
+                  placeholder="Please specify your skill..."
+                  className="custom-skill-input"
+                  required
+                />
+              </div>
+            )}
+          </div>
+        );
+      
+      case 2:
+        return (
+          <div className="onboarding-step">
+            <div className="step-icon">💡</div>
+            <h3 className="step-title">Why do you want to learn this skill?</h3>
+            <p className="step-subtitle">What's driving your learning journey?</p>
+            <div className="goal-grid">
+              {goalOptions.map(goal => (
+                <button
+                  key={goal}
+                  type="button"
+                  className={`goal-option ${form.learningGoal === goal ? 'selected' : ''}`}
+                  onClick={() => setForm(f => ({ ...f, learningGoal: goal }))}
+                >
+                  {goal}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      
+      case 3:
+        return (
+          <div className="onboarding-step">
+            <div className="step-icon">📊</div>
+            <h3 className="step-title">What's your current knowledge in this skill?</h3>
+            <p className="step-subtitle">Help us tailor the perfect learning path</p>
+            <div className="experience-grid">
+              {experienceLevels.map(level => (
+                <button
+                  key={level}
+                  type="button"
+                  className={`experience-option ${form.experienceLevel === level ? 'selected' : ''}`}
+                  onClick={() => setForm(f => ({ ...f, experienceLevel: level }))}
+                >
+                  <div className="experience-level">{level}</div>
+                  <div className="experience-desc">
+                    {level === 'Beginner' && 'Just starting out'}
+                    {level === 'Intermediate' && 'Some experience'}
+                    {level === 'Advanced' && 'Ready for complex topics'}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      
+      case 4:
+        return (
+          <div className="onboarding-step">
+            <div className="step-icon">🎯</div>
+            <h3 className="step-title">What is your target role or outcome?</h3>
+            <p className="step-subtitle">Where do you want to be in your career?</p>
+            <div className="career-input-container">
+              <input
+                name="careerAspiration"
+                value={form.careerAspiration}
+                onChange={handleChange}
+                placeholder="e.g. Frontend Developer, Data Analyst, AI Engineer..."
+                className="career-input"
+                required
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+        );
+      
+      case 5:
+        return (
+          <div className="onboarding-step">
+            <div className="step-icon">🎨</div>
+            <h3 className="step-title">How do you prefer to learn?</h3>
+            <p className="step-subtitle">Choose your preferred learning style (optional)</p>
+            <div className="learning-style-grid">
+              {learningStyles.map(style => (
+                <button
+                  key={style.value}
+                  type="button"
+                  className={`learning-style-option ${form.learningStyle === style.value ? 'selected' : ''}`}
+                  onClick={() => setForm(f => ({ ...f, learningStyle: style.value }))}
+                >
+                  <div className="style-icon">{style.icon}</div>
+                  <div className="style-label">{style.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="onboarding-page" style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(120deg, #f5f5f3 60%, #e6ded7 100%)'}}>
-      <div className="futuristic-card" style={{maxWidth: 520, width: '100%', boxSizing: 'border-box', padding: '3rem 2.5rem', borderRadius: '2rem', boxShadow: '0 12px 48px 0 rgba(80, 70, 50, 0.18)', textAlign: 'center', margin: '2rem auto', background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-        <div style={{marginBottom: '2rem'}}>
-          <span style={{fontSize: '2.5rem', color: '#3B82F6'}}>🗺️</span>
-          <h2 style={{fontSize: '2.1rem', margin: '0.7rem 0 0.3rem 0', color: '#8d6748', fontWeight: 800, letterSpacing: '0.01em'}}>Let's Build Your Roadmap</h2>
-          <p style={{color: '#888', fontSize: '1.15rem'}}>Answer a few quick questions to get a personalized learning journey.</p>
+    <div className="onboarding-page">
+      <div className="onboarding-container">
+        <div className="onboarding-header">
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${(currentStep / 5) * 100}%` }}
+            />
+          </div>
+          <div className="step-indicator">
+            Step {currentStep} of 5
+          </div>
         </div>
-        <form className="onboarding-form" onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'stretch', width: '100%'}}>
-          <div style={{textAlign: 'left', marginBottom: '0.7rem'}}>
-            <label style={{fontWeight: 700, color: '#2563EB', fontSize: '1.18rem'}}>What is your main learning goal?</label>
-            <input name="goals" value={form.goals} onChange={handleChange} placeholder="e.g. Become a frontend developer" required style={{width: '100%', padding: '1rem 1.2rem', borderRadius: '0.9rem', border: '1.5px solid #e0e3ea', fontSize: '1.08rem', marginTop: '0.4rem', background: '#f8fafc'}} />
-          </div>
-          <div style={{textAlign: 'left', marginBottom: '0.7rem'}}>
-            <label style={{fontWeight: 700, color: '#2563EB', fontSize: '1.18rem'}}>Preferred learning style</label>
-            <div style={{display: 'flex', gap: '1rem', marginTop: '0.4rem'}}>
-              <label style={{flex: 1, background: form.preference==='videos'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.preference==='videos'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="preference" value="videos" checked={form.preference==='videos'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Videos" style={{fontSize: '1.3rem'}}>🎬</span> Videos
-              </label>
-              <label style={{flex: 1, background: form.preference==='courses'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.preference==='courses'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="preference" value="courses" checked={form.preference==='courses'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Courses" style={{fontSize: '1.3rem'}}>📚</span> Courses
-              </label>
-              <label style={{flex: 1, background: form.preference==='projects'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.preference==='projects'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="preference" value="projects" checked={form.preference==='projects'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Projects" style={{fontSize: '1.3rem'}}>🛠️</span> Projects
-              </label>
-              <label style={{flex: 1, background: form.preference==='docs'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.preference==='docs'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="preference" value="docs" checked={form.preference==='docs'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Docs" style={{fontSize: '1.3rem'}}>📄</span> Docs
-              </label>
-            </div>
-          </div>
-          <div style={{textAlign: 'left', marginBottom: '0.7rem'}}>
-            <label style={{fontWeight: 700, color: '#2563EB', fontSize: '1.18rem'}}>How do you want to learn?</label>
-            <div style={{display: 'flex', gap: '1rem', marginTop: '0.4rem'}}>
-              <label style={{flex: 1, background: form.mode==='self-paced'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.mode==='self-paced'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="mode" value="self-paced" checked={form.mode==='self-paced'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Self-paced" style={{fontSize: '1.3rem'}}>⏳</span> Self-paced
-              </label>
-              <label style={{flex: 1, background: form.mode==='guided'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.mode==='guided'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="mode" value="guided" checked={form.mode==='guided'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Guided" style={{fontSize: '1.3rem'}}>🧑‍🏫</span> Guided
-              </label>
-              <label style={{flex: 1, background: form.mode==='collaborative'?'#e0e7ff':'#f8fafc', border: '1.5px solid #e0e3ea', borderRadius: '0.9rem', padding: '1rem', cursor: 'pointer', textAlign: 'center', transition: 'none', fontWeight: 600, color: '#3B82F6', boxShadow: form.mode==='collaborative'?'0 2px 12px #3B82F622':'none'}}>
-                <input type="radio" name="mode" value="collaborative" checked={form.mode==='collaborative'} onChange={handleChange} style={{marginRight: 8}} />
-                <span role="img" aria-label="Collaborative" style={{fontSize: '1.3rem'}}>🤝</span> Collaborative
-              </label>
-            </div>
-          </div>
-          {error && <div className="form-error">{error}</div>}
-          <button className="primary-btn" type="submit" disabled={loading} style={{fontSize: '1.25rem', padding: '1.1rem 0', borderRadius: '2rem', marginTop: '1.2rem', width: '100%'}}>{loading ? 'Generating Roadmap...' : 'Get My Roadmap'}</button>
-        </form>
+
+        <div className="onboarding-content">
+          {renderStep()}
+        </div>
+
+        <div className="onboarding-actions">
+          {currentStep > 1 && (
+            <button 
+              type="button" 
+              className="btn-secondary" 
+              onClick={handlePrev}
+            >
+              ← Previous
+            </button>
+          )}
+          
+          {currentStep < 5 ? (
+            <button 
+              type="button" 
+              className="btn-primary" 
+              onClick={handleNext}
+              disabled={
+                (currentStep === 1 && (!form.primarySkill || (form.primarySkill === 'Other' && !form.customSkill))) ||
+                (currentStep === 2 && !form.learningGoal) ||
+                (currentStep === 3 && !form.experienceLevel) ||
+                (currentStep === 4 && !form.careerAspiration)
+              }
+            >
+              Next →
+            </button>
+          ) : (
+            <button 
+              type="button" 
+              className="btn-primary" 
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Generating Roadmap...' : 'Get My Roadmap 🚀'}
+            </button>
+          )}
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
       </div>
+
+      <style>{`
+        .onboarding-page {
+          min-height: 100vh;
+          background: var(--primary-gradient);
+          background-size: 400% 400%;
+          animation: gradientShift 8s ease infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .onboarding-page::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+          opacity: 0.3;
+          animation: float 20s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        @keyframes gradientShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .onboarding-container {
+          background: var(--card-glass);
+          backdrop-filter: blur(20px);
+          border-radius: 2rem;
+          padding: 3rem;
+          max-width: 650px;
+          width: 100%;
+          box-shadow: var(--shadow);
+          border: 1.5px solid var(--brown);
+          position: relative;
+          z-index: 1;
+          animation: fadeInUp 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .onboarding-header {
+          margin-bottom: 2.5rem;
+        }
+
+        .progress-bar {
+          height: 8px;
+          background: rgba(141, 103, 72, 0.2);
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 1.2rem;
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: var(--primary-gradient-90);
+          border-radius: 4px;
+          transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+          box-shadow: 0 2px 8px rgba(141, 103, 72, 0.3);
+        }
+
+        .step-indicator {
+          text-align: center;
+          color: var(--brown);
+          font-weight: 700;
+          font-size: 1rem;
+          letter-spacing: 0.05em;
+          text-shadow: 0 1px 3px rgba(141, 103, 72, 0.3);
+        }
+
+        .onboarding-step {
+          text-align: center;
+          margin-bottom: 2.5rem;
+        }
+
+        .step-icon {
+          font-size: 4rem;
+          margin-bottom: 1.5rem;
+          animation: bounce 2s infinite;
+          filter: drop-shadow(0 4px 8px rgba(141, 103, 72, 0.3));
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-12px); }
+          60% { transform: translateY(-6px); }
+        }
+
+        .step-title {
+          font-family: 'Orbitron', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+          font-size: 2rem;
+          color: var(--brown);
+          margin-bottom: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-shadow: 0 2px 8px rgba(141, 103, 72, 0.3);
+        }
+
+        .step-subtitle {
+          color: #86523f;
+          font-size: 1.1rem;
+          margin-bottom: 2.5rem;
+          font-weight: 500;
+        }
+
+        .skill-grid, .goal-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 1.2rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .experience-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1.2rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .learning-style-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+          gap: 1.2rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .skill-option, .goal-option, .experience-option, .learning-style-option {
+          padding: 1.2rem 1rem;
+          border: 2px solid var(--accent);
+          border-radius: 1.2rem;
+          background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+          cursor: pointer;
+          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+          font-weight: 600;
+          color: var(--brown);
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+        }
+
+        .skill-option::before, .goal-option::before, .experience-option::before, .learning-style-option::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.5s;
+        }
+
+        .skill-option:hover::before, .goal-option:hover::before, .experience-option:hover::before, .learning-style-option:hover::before {
+          left: 100%;
+        }
+
+        .skill-option:hover, .goal-option:hover, .experience-option:hover, .learning-style-option:hover {
+          border-color: var(--brown);
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 8px 25px rgba(141, 103, 72, 0.25);
+        }
+
+        .skill-option.selected, .goal-option.selected, .experience-option.selected, .learning-style-option.selected {
+          border-color: var(--brown);
+          background: var(--primary-gradient-90);
+          color: white;
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 8px 25px rgba(141, 103, 72, 0.35);
+        }
+
+        .experience-option {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
+          padding: 1.5rem 1rem;
+        }
+
+        .experience-level {
+          font-size: 1.2rem;
+          font-weight: 800;
+          letter-spacing: 0.02em;
+        }
+
+        .experience-desc {
+          font-size: 0.95rem;
+          opacity: 0.9;
+          font-weight: 500;
+        }
+
+        .learning-style-option {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
+          padding: 1.5rem 1rem;
+        }
+
+        .style-icon {
+          font-size: 2rem;
+          filter: drop-shadow(0 2px 4px rgba(141, 103, 72, 0.2));
+        }
+
+        .style-label {
+          font-size: 0.95rem;
+          font-weight: 600;
+        }
+
+        .career-input-container {
+          margin-bottom: 1.5rem;
+          width: 100%;
+          max-width: 100%;
+        }
+
+        .career-input {
+          width: 100%;
+          max-width: 100%;
+          padding: 1.2rem 1.8rem;
+          border: 2px solid var(--accent);
+          border-radius: 1.2rem;
+          font-size: 1.1rem;
+          background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+          transition: all 0.3s ease;
+          color: var(--brown);
+          font-weight: 500;
+          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+          box-sizing: border-box;
+        }
+
+        .custom-skill-container {
+          margin-top: 1.5rem;
+          width: 100%;
+          max-width: 100%;
+        }
+
+        .custom-skill-input {
+          width: 100%;
+          max-width: 100%;
+          padding: 1.2rem 1.8rem;
+          border: 2px solid var(--accent);
+          border-radius: 1.2rem;
+          font-size: 1.1rem;
+          background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+          transition: all 0.3s ease;
+          color: var(--brown);
+          font-weight: 500;
+          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+          box-sizing: border-box;
+        }
+
+        .career-input:focus, .custom-skill-input:focus {
+          outline: none;
+          border-color: var(--brown);
+          box-shadow: 0 0 0 4px rgba(141, 103, 72, 0.15), 0 8px 25px rgba(141, 103, 72, 0.2);
+          transform: translateY(-2px);
+        }
+
+        .career-input::placeholder, .custom-skill-input::placeholder {
+          color: #a89f91;
+          font-weight: 400;
+        }
+
+        .onboarding-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1.5rem;
+          margin-top: 1rem;
+        }
+
+        .btn-primary, .btn-secondary {
+          padding: 1.2rem 2.5rem;
+          border-radius: 1.5rem;
+          font-weight: 700;
+          font-size: 1.1rem;
+          cursor: pointer;
+          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+          border: none;
+          letter-spacing: 0.02em;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .btn-primary {
+          background: var(--primary-gradient-90);
+          color: white;
+          box-shadow: 0 6px 20px rgba(141, 103, 72, 0.3);
+        }
+
+        .btn-primary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+          left: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          transform: translateY(-3px) scale(1.05);
+          box-shadow: 0 12px 35px rgba(141, 103, 72, 0.4);
+        }
+
+        .btn-primary:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btn-secondary {
+          background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+          color: var(--brown);
+          border: 2px solid var(--accent);
+          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+        }
+
+        .btn-secondary:hover {
+          background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
+          transform: translateY(-3px) scale(1.05);
+          box-shadow: 0 8px 25px rgba(141, 103, 72, 0.2);
+          border-color: var(--brown);
+        }
+
+        .error-message {
+          background: linear-gradient(145deg, #fee 0%, #fdd 100%);
+          color: #c33;
+          padding: 1.2rem;
+          border-radius: 1rem;
+          margin-top: 1.5rem;
+          text-align: center;
+          border: 2px solid #fcc;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(204, 51, 51, 0.2);
+        }
+
+        @media (max-width: 768px) {
+          .onboarding-container {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+            max-width: 95vw;
+          }
+          
+          .skill-grid, .goal-grid, .experience-grid, .learning-style-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+          
+          .onboarding-actions {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .btn-primary, .btn-secondary {
+            width: 100%;
+            padding: 1rem 2rem;
+          }
+
+          .step-title {
+            font-size: 1.6rem;
+          }
+
+          .step-icon {
+            font-size: 3rem;
+          }
+
+          .career-input, .custom-skill-input {
+            font-size: 1rem;
+            padding: 1rem 1.5rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .onboarding-page {
+            padding: 1rem;
+          }
+          
+          .onboarding-container {
+            padding: 1.5rem 1rem;
+          }
+
+          .step-title {
+            font-size: 1.4rem;
+          }
+
+          .step-subtitle {
+            font-size: 1rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -493,7 +1130,7 @@ function LoginPage({ onLogin, onNav }) {
       // Optionally, use rememberMe for localStorage or auth persistence
       await signInWithEmailAndPassword(auth, email, password);
       onLogin();
-      navigate('/onboarding');
+      navigate('/'); // Change redirect to home page
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1012,8 +1649,8 @@ function App() {
       {/* Routes for Learning Hub and Progress removed */}
       {/* Temporary routing to existing pages; replace with real components later */}
       <Route path="/resume-builder" element={<ResumeAnalysis />} />
-      <Route path="/news" element={<ResumeResult />} />
-      <Route path="/aptitude" element={<ResumeResult />} />
+      <Route path="/news" element={<TechNews />} />
+      <Route path="/aptitude" element={<Aptitude />} />
       {/* Profile route removed; using navbar modal */}
       <Route path="/" element={
         <div className="landing-page">

@@ -80,7 +80,12 @@ function extractSkillsFromText(text) {
 // Onboarding endpoint (with resume parsing)
 app.post('/api/onboarding', async (req, res) => {
   try {
-    const { uid, name, email, skills, goals, preference, mode, resumeUrl, linkedin, education, role, targetRole } = req.body;
+    const { uid, name, email, skills, goals, preference, mode, resumeUrl, linkedin, education, role, targetRole, primarySkill, learningGoal, experienceLevel, careerAspiration, learningStyle } = req.body;
+    
+    console.log(`[onboarding] Received data:`, {
+      uid, name, email, skills, goals, preference, mode, resumeUrl, linkedin, education, role, targetRole, 
+      primarySkill, learningGoal, experienceLevel, careerAspiration, learningStyle
+    });
     if (!uid) {
       return res.status(400).json({ error: 'uid is required' });
     }
@@ -127,10 +132,19 @@ app.post('/api/onboarding', async (req, res) => {
     }
     profile.onboarding = {
       lastSubmittedAt: new Date().toISOString(),
+      // Legacy fields (for backward compatibility)
       goals: typeof goals === 'string' ? goals : existingProfile.goals || '',
       preference: typeof preference === 'string' ? preference : existingProfile.preference || '',
-      mode: typeof mode === 'string' ? mode : existingProfile.mode || ''
+      mode: typeof mode === 'string' ? mode : existingProfile.mode || '',
+      // New onboarding fields
+      primarySkill: typeof primarySkill === 'string' ? primarySkill : '',
+      learningGoal: typeof learningGoal === 'string' ? learningGoal : '',
+      experienceLevel: typeof experienceLevel === 'string' ? experienceLevel : '',
+      careerAspiration: typeof careerAspiration === 'string' ? careerAspiration : '',
+      learningStyle: typeof learningStyle === 'string' ? learningStyle : ''
     };
+    
+    console.log(`[onboarding] Storing onboarding data:`, profile.onboarding);
 
     await admin.firestore().collection('users').doc(uid).set({ profile }, { merge: true });
 
@@ -178,6 +192,9 @@ app.post('/api/generate-roadmap', async (req, res) => {
     const profile = userDoc.data().profile || {};
     const userSkills = Array.isArray(profile.skills) ? profile.skills : [];
     const historicalSkills = Array.isArray(profile.pastSkills) ? profile.pastSkills : [];
+    const onboardingMeta = typeof profile.onboarding === 'object' && profile.onboarding ? profile.onboarding : {};
+    
+    // Legacy fields (for backward compatibility)
     const targetGoal = typeof profile.goals === 'string' ? profile.goals : '';
     const pref = typeof profile.preference === 'string' ? profile.preference : '';
     const mode = typeof profile.mode === 'string' ? profile.mode : '';
@@ -186,9 +203,9 @@ app.post('/api/generate-roadmap', async (req, res) => {
     const education = typeof profile.education === 'string' ? profile.education : '';
     const role = typeof profile.role === 'string' ? profile.role : '';
     const targetRole = typeof profile.targetRole === 'string' ? profile.targetRole : '';
-    const onboardingMeta = typeof profile.onboarding === 'object' && profile.onboarding ? profile.onboarding : {};
 
-    console.log(`[generate-roadmap] profile data: skills=${userSkills.length}, goal="${targetGoal}", pref="${pref}", mode="${mode}", edu="${education}", role="${role}", targetRole="${targetRole}"`);
+    console.log(`[generate-roadmap] profile data: skills=${userSkills.length}, onboarding=${JSON.stringify(onboardingMeta)}`);
+    console.log(`[generate-roadmap] legacy data: goal="${targetGoal}", pref="${pref}", mode="${mode}", edu="${education}", role="${role}", targetRole="${targetRole}"`);
 
     if (!process.env.GEMINI_API_KEY) {
       console.error('[generate-roadmap] GEMINI_API_KEY not set');
@@ -202,6 +219,40 @@ app.post('/api/generate-roadmap', async (req, res) => {
     let aiPlanRaw = '';
     try {
       console.log(`[generate-roadmap] calling Gemini for comprehensive plan...`);
+      
+      // Structure data according to the new prompt requirements
+      const signupData = {
+        name,
+        email,
+        education,
+        role,
+        skills: userSkills,
+        historicalSkills
+      };
+      
+      const onboardingData = {
+        primarySkill: onboardingMeta.primarySkill || '',
+        learningGoal: onboardingMeta.learningGoal || '',
+        experienceLevel: onboardingMeta.experienceLevel || '',
+        careerAspiration: onboardingMeta.careerAspiration || '',
+        learningStyle: onboardingMeta.learningStyle || ''
+      };
+      
+      console.log(`[generate-roadmap] onboarding data:`, onboardingData);
+      console.log(`[generate-roadmap] onboardingMeta keys:`, Object.keys(onboardingMeta));
+      
+      // Check if we have valid onboarding data
+      const hasOnboardingData = onboardingData.primarySkill || onboardingData.learningGoal || onboardingData.experienceLevel;
+      if (!hasOnboardingData) {
+        console.warn(`[generate-roadmap] No onboarding data found, using legacy data`);
+        // Fallback to legacy data if no onboarding data
+        onboardingData.primarySkill = targetRole || 'General Skills';
+        onboardingData.learningGoal = targetGoal || 'Career Development';
+        onboardingData.experienceLevel = 'intermediate';
+        onboardingData.careerAspiration = targetRole || '';
+        onboardingData.learningStyle = pref || 'mixed';
+      }
+      
       const context = {
         name,
         email,
@@ -215,7 +266,72 @@ app.post('/api/generate-roadmap', async (req, res) => {
         learningMode: mode,
         onboarding: onboardingMeta
       };
-      const prompt = `You are a senior career mentor. Combine historical background with current onboarding intent to produce a pragmatic transition plan.\n\nUSER CONTEXT JSON: ${JSON.stringify(context)}\n\nReturn STRICT JSON ONLY (no prose, no code fences) with this exact shape:\n{\n  "analysis": {\n    "skillGaps": ["..."],\n    "level": "beginner|intermediate|advanced",\n    "summary": "Summarize current vs target and transition focus"\n  },\n  "tips": ["Actionable tips to move from historicalSkills to goals/targetRole"],\n  "roadmap": [\n    { "week": 1, "weeklyGoal": "...", "topics": ["..."], "projects": ["..."], "assessment": "quiz|mini-project|reflection" }\n  ],\n  "resources": {\n    "recommendedSearchKeywords": ["..."],\n    "books": [{"title":"...","author":"..."}],\n    "courses": [{"title":"...","platform":"...","url":"..."}],\n    "videos": [{"title":"...","url":"..."}]\n  }\n}`;
+      const prompt = `You are a senior career mentor. Generate a structured learning roadmap that is centered ONLY on the user's PRIMARY SKILL INTEREST. 
+Use signup data for background context and onboarding data for specific learning goals.
+
+### USER CONTEXT
+Signup Data: ${JSON.stringify(signupData)}
+Onboarding Data: ${JSON.stringify(onboardingData)}
+
+### GUIDELINES
+1) Roadmap must focus on primarySkill (the exact skill user wants to learn now).
+2) Use pastSkills and education (from signup) to:
+   - Identify transferable knowledge
+   - Highlight gaps between current skillset and the primarySkill
+3) Adapt roadmap depth by experienceLevel (beginner | intermediate | advanced).
+4) Adapt delivery style by learningStyle (visual = videos/diagrams; hands-on = projects; reading = docs/books; mixed = balanced).
+5) Use learningGoal to shape outcomes (portfolio projects, certification, career switch, etc.).
+6) Use careerAspiration ONLY for context:
+   - Show how progress in primarySkill contributes toward that role
+   - Suggest complementary skills needed for careerAspiration after finishing primarySkill
+7) After roadmap, provide career context in "careerPathways":
+   - "nextSkillsForTargetRole": what additional skills are required to fully qualify for the targetRole
+   - "alternativeOpportunities": other roles or fields where the primarySkill is valuable
+8) Do NOT fabricate URLs. Provide titles, platforms, or keywords only. Backend will attach actual links.
+
+### RESPONSE FORMAT
+Return STRICT JSON ONLY with this structure:
+
+{
+  "analysis": {
+    "skillGaps": ["..."],
+    "level": "beginner|intermediate|advanced",
+    "summary": "Briefly explain user's current foundation, the gaps in primarySkill, and how filling them supports the careerAspiration."
+  },
+  "tips": ["Short, actionable tips tailored to learningStyle and experienceLevel"],
+  "roadmap": [
+    {
+      "week": 1,
+      "weeklyGoal": "...",
+      "topics": ["..."],
+      "projects": ["..."],
+      "assessment": "quiz | mini-project | reflection",
+      "roleAlignment": "How this week's learning in primarySkill helps progress toward careerAspiration"
+    }
+  ],
+  "resources": {
+    "recommendedSearchKeywords": ["..."],
+    "books": [{"title":"...","author":"..."}],
+    "courses": [{"title":"...","platform":"..."}],
+    "videos": [{"title":"..."}]
+  },
+  "careerPathways": {
+    "nextSkillsForTargetRole": ["..."],
+    "alternativeOpportunities": ["..."]
+  }
+}
+
+### CONTEXT PRIORITY
+- Primary focus: primarySkill="${onboardingData.primarySkill}"
+- Learning goal: "${onboardingData.learningGoal}"
+- Experience level: "${onboardingData.experienceLevel}"
+- Learning style: "${onboardingData.learningStyle}"
+- Target role context: "${onboardingData.careerAspiration}"
+- Past skills (from signup): ${signupData.skills}
+- Education: ${signupData.education}
+
+Remember: The ROADMAP is ONLY for primarySkill. Career pathways provide the bigger picture.
+`;
       aiPlanRaw = await callGeminiGenerate(prompt, { retries: 2, timeout: AXIOS_TIMEOUT_MS, model: 'gemini-2.5-flash' });
       console.log(`[generate-roadmap] Gemini comprehensive response received (${aiPlanRaw.length} chars)`);
     } catch (e) {
@@ -450,17 +566,100 @@ app.get('/api/resources/:uid', async (req, res) => {
   }
 });
 
-// Tech news endpoint (stub)
+// Tech news endpoint (NewsAPI proxy with basic caching)
+const NEWS_CACHE_TTL_MS = parseInt(process.env.NEWS_CACHE_TTL_MS || '60000', 10); // 60s default
+let newsCache = { key: '', timestamp: 0, payload: null };
+
 app.get('/api/news', async (req, res) => {
   try {
-    // For demo, return static news
-    const news = [
-      { title: 'AI beats humans at coding', summary: 'Gemini 2.5 Flash sets new record.', url: 'https://news.com/ai-coding' },
-      { title: 'React 19 Released', summary: 'Major improvements in performance and DX.', url: 'https://news.com/react19' }
-    ];
-    res.json({ news });
+    const apiKey = process.env.NEWS_API_KEY;
+    const { q = '', category = 'technology', pageSize = '20', language = 'en' } = req.query || {};
+    const search = (q || category || 'technology').toString();
+    const cacheKey = `${search}|${pageSize}|${language}`;
+
+    if (newsCache.payload && newsCache.key === cacheKey && (Date.now() - newsCache.timestamp) < NEWS_CACHE_TTL_MS) {
+      return res.json(newsCache.payload);
+    }
+
+    if (!apiKey) {
+      // Fallback to static demo when no API key
+      const payload = {
+        status: 'fallback',
+        articles: [
+          { title: 'Tech News Fallback', description: 'Provide NEWS_API_KEY to enable live news.', url: 'https://newsapi.org', urlToImage: '', publishedAt: new Date().toISOString(), source: { name: 'Local' } }
+        ]
+      };
+      newsCache = { key: cacheKey, timestamp: Date.now(), payload };
+      return res.json(payload);
+    }
+
+    // Detect provider (supports NewsAPI.org and Newsdata.io). You can force via NEWS_PROVIDER=newsapi|newsdata
+    const providerEnv = (process.env.NEWS_PROVIDER || '').toLowerCase();
+    const isNewsDataKey = typeof apiKey === 'string' && apiKey.startsWith('pub_');
+    const provider = providerEnv || (isNewsDataKey ? 'newsdata' : 'newsapi');
+
+    let payload;
+    if (provider === 'newsdata') {
+      // Newsdata.io
+      const url = 'https://newsdata.io/api/1/news';
+      const params = {
+        apikey: apiKey,
+        q: search,
+        language,
+        category
+      };
+      const response = await axios.get(url, { params, timeout: AXIOS_TIMEOUT_MS });
+      const data = response.data || {};
+      const articles = (data.results || []).map(r => ({
+        title: r.title,
+        description: r.description,
+        url: r.link,
+        urlToImage: r.image_url,
+        publishedAt: r.pubDate,
+        source: { name: r.source_id }
+      }));
+      payload = { status: 'ok', provider: 'newsdata', totalResults: articles.length, articles };
+    } else {
+      // NewsAPI.org
+      const params = {
+        q: search,
+        language,
+        sortBy: 'publishedAt',
+        pageSize,
+        apiKey
+      };
+      const url = 'https://newsapi.org/v2/everything';
+      const response = await axios.get(url, { params, timeout: AXIOS_TIMEOUT_MS });
+      const data = response.data || {};
+      payload = { status: data.status || 'ok', provider: 'newsapi', totalResults: data.totalResults, articles: data.articles || [] };
+    }
+
+    newsCache = { key: cacheKey, timestamp: Date.now(), payload };
+    res.json(payload);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[api/news] Error:', err.response?.data || err.message);
+    // Serve cached if available
+    if (newsCache.payload) {
+      return res.json({ ...newsCache.payload, cached: true });
+    }
+    // Graceful fallback with 200 status
+    const fallback = {
+      status: 'fallback',
+      provider: 'fallback',
+      totalResults: 1,
+      articles: [
+        {
+          title: 'Live tech news temporarily unavailable',
+          description: 'Showing fallback content. Please try again shortly.',
+          url: 'https://newsdata.io/ or https://newsapi.org/',
+          urlToImage: '',
+          publishedAt: new Date().toISOString(),
+          source: { name: 'Local' }
+        }
+      ]
+    };
+    newsCache = { key: 'fallback', timestamp: Date.now(), payload: fallback };
+    return res.json(fallback);
   }
 });
 
@@ -474,6 +673,73 @@ app.post('/api/progress', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Fetch aptitude questions from database
+app.post('/api/aptitude-questions', async (req, res) => {
+  try {
+    const { category = 'general', count = 5 } = req.body || {};
+    console.log(`[aptitude-questions] Fetching ${count} questions for category: ${category}`);
+    
+    const db = admin.firestore();
+    
+    // Get random questions from the specified category
+    const snapshot = await db.collection('aptitude_questions')
+      .where('category', '==', category)
+      .limit(50) // Get more than needed to randomize
+      .get();
+    
+    if (snapshot.empty) {
+      console.warn(`[aptitude-questions] No questions found for category: ${category}`);
+      return res.status(404).json({ error: `No questions available for ${category} category` });
+    }
+    
+    // Convert to array and shuffle
+    const allQuestions = [];
+    snapshot.forEach(doc => {
+      allQuestions.push({ id: doc.id, ...doc.data() });
+    });
+    
+    // Shuffle and take the requested number
+    const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+    const selectedQuestions = shuffled.slice(0, Math.min(count, shuffled.length));
+    
+    console.log(`[aptitude-questions] Returning ${selectedQuestions.length} questions for ${category}`);
+    res.json({ questions: selectedQuestions });
+    
+  } catch (error) {
+    console.error('[aptitude-questions] Error:', error);
+    res.status(500).json({ error: 'Failed to fetch aptitude questions.' });
+  }
+});
+
+// Endpoint to check if questions are available
+app.get('/api/aptitude-status', async (req, res) => {
+  try {
+    const db = admin.firestore();
+    const categories = ['general', 'quantitative', 'logical', 'verbal'];
+    const status = {};
+    
+    for (const category of categories) {
+      const snapshot = await db.collection('aptitude_questions')
+        .where('category', '==', category)
+        .limit(1)
+        .get();
+      
+      status[category] = {
+        available: !snapshot.empty,
+        count: snapshot.empty ? 0 : await db.collection('aptitude_questions')
+          .where('category', '==', category)
+          .get()
+          .then(s => s.size)
+      };
+    }
+    
+    res.json({ status });
+  } catch (error) {
+    console.error('[aptitude-status] Error:', error);
+    res.status(500).json({ error: 'Failed to check aptitude status.' });
   }
 });
 
