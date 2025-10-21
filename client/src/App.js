@@ -7,8 +7,8 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import ResumeAnalysis from './pages/ResumeAnalysis';
 import ResumeResult from './pages/ResumeResult';
+import ResumeBuilderNew from './pages/ResumeBuilderNew';
 import TechNews from './pages/TechNews';
-// Stubs for Resume Builder can route to existing components if needed
 import Roadmap from './pages/Roadmap';
 // Removed LearningHub and Progress pages
 // Profile page removed; using in-nav modal instead
@@ -1645,10 +1645,8 @@ function App() {
       <Route path="/onboarding" element={<OnboardingPage user={user} />} />
       <Route path="/resume" element={<ResumeAnalysis />} />
       <Route path="/resume-result" element={<ResumeResult />} />
+      <Route path="/resume-builder" element={<ResumeBuilderNew />} />
       <Route path="/roadmap" element={<Roadmap />} />
-      {/* Routes for Learning Hub and Progress removed */}
-      {/* Temporary routing to existing pages; replace with real components later */}
-      <Route path="/resume-builder" element={<ResumeAnalysis />} />
       <Route path="/news" element={<TechNews />} />
       <Route path="/aptitude" element={<Aptitude />} />
       {/* Profile route removed; using navbar modal */}
