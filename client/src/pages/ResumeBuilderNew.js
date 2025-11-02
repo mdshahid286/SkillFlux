@@ -87,7 +87,7 @@ const ResumeBuilderContent = () => {
       </header>
 
       {/* Main Content - Split View */}
-      <main className="relative flex h-full w-full overflow-hidden">
+      <main className="relative flex h-full w-full">
         <div className="grid h-full w-full grid-cols-1 md:grid-cols-2">
           {/* Left Panel - Form */}
           <div className="col-span-1 border-r border-gray-200 bg-gray-50">

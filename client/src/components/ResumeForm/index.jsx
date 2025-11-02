@@ -9,6 +9,7 @@ import { ProfileForm } from './ProfileForm';
 import { WorkExperiencesForm } from './WorkExperiencesForm';
 import { EducationsForm } from './EducationsForm';
 import { ProjectsForm } from './ProjectsForm';
+import { CertificationsForm } from './CertificationsForm';
 import { SkillsForm } from './SkillsForm';
 import { ThemeForm } from './ThemeForm';
 
@@ -16,6 +17,7 @@ const formTypeToComponent = {
   workExperiences: WorkExperiencesForm,
   educations: EducationsForm,
   projects: ProjectsForm,
+  certifications: CertificationsForm,
   skills: SkillsForm
 };
 

@@ -41,9 +41,9 @@ export const ResumePDFWorkExperience = ({
               <Text
                 style={{
                   fontSize: 10,
-                  color: themeColor,
+                  color: '#111827', // change to black
                   marginTop: 1,
-                  fontWeight: 800
+                  fontWeight: 500 // normal for job title
                 }}
               >
                 {jobTitle}

@@ -3,11 +3,11 @@ import { View, Text, Link } from '@react-pdf/renderer';
 import { styles, spacing } from './styles';
 import { ResumePDFSection, ResumePDFBulletList, ResumePDFText } from './common';
 
-export const ResumePDFProject = ({ heading, projects, themeColor }) => {
+export const ResumePDFCertifications = ({ heading, certifications, themeColor }) => {
   return (
     <ResumePDFSection themeColor={themeColor} heading={heading}>
-      {projects.map(({ project, date, descriptions, url }, idx) => {
-        if (!project) return null;
+      {certifications.map(({ name, issuer, date, url }, idx) => {
+        if (!name) return null;
 
         return (
           <View
@@ -20,7 +20,7 @@ export const ResumePDFProject = ({ heading, projects, themeColor }) => {
             <View style={{ ...styles.flexRow, justifyContent: 'space-between', alignItems: 'flex-start' }}>
               {url ? (
                 <Link src={url.startsWith('http') ? url : `https://${url}`} style={{ fontSize: 11, fontWeight: 800, color: '#111827' }}>
-                  {project}
+                  {name}
                 </Link>
               ) : (
                 <Text
@@ -30,7 +30,7 @@ export const ResumePDFProject = ({ heading, projects, themeColor }) => {
                     color: '#111827'
                   }}
                 >
-                  {project}
+                  {name}
                 </Text>
               )}
               {date && (
@@ -39,8 +39,17 @@ export const ResumePDFProject = ({ heading, projects, themeColor }) => {
                 </Text>
               )}
             </View>
-            {descriptions && descriptions.length > 0 && (
-              <ResumePDFBulletList items={descriptions} showBulletPoints={true} textColor="#111827" fontWeight={400} />
+            {issuer && (
+              <Text
+                style={{
+                  fontSize: 10,
+                  color: '#111827',
+                  marginTop: 1,
+                  fontWeight: 500
+                }}
+              >
+                {issuer}
+              </Text>
             )}
           </View>
         );

@@ -12,6 +12,7 @@ const initialSettings = {
     workExperiences: true,
     educations: true,
     projects: true,
+    certifications: true,
     skills: true,
     custom: false
   },
@@ -19,10 +20,11 @@ const initialSettings = {
     workExperiences: 'WORK EXPERIENCE',
     educations: 'EDUCATION',
     projects: 'PROJECT',
+    certifications: 'CERTIFICATIONS',
     skills: 'SKILLS',
     custom: 'CUSTOM SECTION'
   },
-  formsOrder: ['workExperiences', 'educations', 'projects', 'skills', 'custom'],
+  formsOrder: ['workExperiences', 'educations', 'projects', 'certifications', 'skills', 'custom'],
   showBulletPoints: {
     workExperiences: true,
     educations: true,

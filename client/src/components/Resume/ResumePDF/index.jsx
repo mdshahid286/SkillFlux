@@ -1,15 +1,16 @@
 import React from 'react';
 import { Page, View, Document } from '@react-pdf/renderer';
-import { styles, spacing } from './styles';
+import { styles } from './styles';
 import { ResumePDFProfile } from './ResumePDFProfile';
 import { ResumePDFWorkExperience } from './ResumePDFWorkExperience';
 import { ResumePDFEducation } from './ResumePDFEducation';
 import { ResumePDFProject } from './ResumePDFProject';
+import { ResumePDFCertifications } from './ResumePDFCertifications';
 import { ResumePDFSkills } from './ResumePDFSkills';
 import { DEFAULT_FONT_COLOR } from '../../../redux/settingsSlice';
 
 export const ResumePDF = ({ resume, settings, isPDF = false }) => {
-  const { profile, workExperiences, educations, projects, skills } = resume;
+  const { profile, workExperiences, educations, projects, certifications, skills } = resume;
   const { name } = profile;
   const {
     fontFamily,
@@ -44,6 +45,13 @@ export const ResumePDF = ({ resume, settings, isPDF = false }) => {
       <ResumePDFProject
         heading={formToHeading['projects']}
         projects={projects}
+        themeColor={themeColor}
+      />
+    ),
+    certifications: () => (
+      <ResumePDFCertifications
+        heading={formToHeading['certifications']}
+        certifications={certifications}
         themeColor={themeColor}
       />
     ),
@@ -85,12 +93,14 @@ export const ResumePDF = ({ resume, settings, isPDF = false }) => {
         {Boolean(settings.themeColor) && (
           <View
             style={{
-              width: 'calc(100% + 1.1in)',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
               height: 6,
               backgroundColor: themeColor,
-              marginLeft: '-0.55in',
               marginBottom: 14,
-              marginTop: '-0.55in'
+              zIndex: 10
             }}
           />
         )}

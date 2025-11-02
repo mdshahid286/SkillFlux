@@ -78,8 +78,7 @@ export const Resume = () => {
 							backgroundColor: 'white',
 							boxShadow: '0 10px 30px rgba(0, 0, 0, 0.12)',
 							border: '1px solid #e5e7eb',
-							borderRadius: 8,
-							overflow: 'hidden'
+							borderRadius: 8
 						}}
 					>
 						<ResumeDOM resume={resume} settings={settings} />

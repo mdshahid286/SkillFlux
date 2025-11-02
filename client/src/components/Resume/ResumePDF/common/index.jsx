@@ -23,7 +23,7 @@ export const ResumePDFSection = ({ themeColor, heading, children }) => {
   );
 };
 
-export const ResumePDFBulletList = ({ items, showBulletPoints = true }) => {
+export const ResumePDFBulletList = ({ items, showBulletPoints = true, textColor = '#111827', fontWeight = 400 }) => {
   return (
     <View style={{ ...styles.flexCol, marginTop: 5 }}>
       {items.map((item, idx) => (
@@ -36,9 +36,9 @@ export const ResumePDFBulletList = ({ items, showBulletPoints = true }) => {
           }}
         >
           {showBulletPoints && (
-            <Text style={{ fontSize: 10, color: '#111827' }}>•</Text>
+            <Text style={{ fontSize: 10, color: textColor }}>•</Text>
           )}
-          <Text style={{ fontSize: 10, lineHeight: 1.4, color: '#111827', flex: 1 }}>
+          <Text style={{ fontSize: 10, lineHeight: 1.4, color: textColor, fontWeight: fontWeight, flex: 1 }}>
             {item}
           </Text>
         </View>

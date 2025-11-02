@@ -1,14 +1,10 @@
-import React from 'react';
+import { ExpanderWithHeightTransition } from "components/ExpanderWithHeightTransition";
 import {
-  BuildingOfficeIcon,
-  AcademicCapIcon,
-  LightBulbIcon,
-  WrenchScrewdriverIcon,
-  PlusSmallIcon,
-  DocumentCheckIcon
-} from '@heroicons/react/24/outline';
-import { ShowIconButton, MoveIconButton, DeleteIconButton } from './IconButton';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+  DeleteIconButton,
+  MoveIconButton,
+  ShowIconButton,
+} from "components/ResumeForm/Form/IconButton";
+import { useAppDispatch, useAppSelector } from "lib/redux/hooks";
 import {
   changeFormHeading,
   changeFormOrder,
@@ -16,15 +12,33 @@ import {
   selectHeadingByForm,
   selectIsFirstForm,
   selectIsLastForm,
-  selectShowByForm
-} from '../../../redux/settingsSlice';
+  selectShowByForm,
+  ShowForm,
+} from "lib/redux/settingsSlice";
+import {
+  BuildingOfficeIcon,
+  AcademicCapIcon,
+  LightBulbIcon,
+  WrenchIcon,
+  PlusSmallIcon,
+} from "@heroicons/react/24/outline";
 import {
   addSectionInForm,
   deleteSectionInFormByIdx,
-  moveSectionInForm
-} from '../../../redux/resumeSlice';
+  moveSectionInForm,
+} from "lib/redux/resumeSlice";
 
-export const BaseForm = ({ children, className = '' }) => (
+/**
+ * BaseForm is the bare bone form, i.e. just the outline with no title and no control buttons.
+ * ProfileForm uses this to compose its outline.
+ */
+export const BaseForm = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
   <section
     className={`flex flex-col gap-3 rounded-md bg-white p-6 pt-4 shadow transition-opacity duration-200 ${className}`}
   >
@@ -32,44 +46,38 @@ export const BaseForm = ({ children, className = '' }) => (
   </section>
 );
 
-const FORM_TO_ICON = {
+const FORM_TO_ICON: { [section in ShowForm]: typeof BuildingOfficeIcon } = {
   workExperiences: BuildingOfficeIcon,
   educations: AcademicCapIcon,
   projects: LightBulbIcon,
-  certifications: DocumentCheckIcon,
-  skills: WrenchScrewdriverIcon,
-  custom: WrenchScrewdriverIcon
+  skills: WrenchIcon,
+  custom: WrenchIcon,
 };
 
-const ExpanderWithHeightTransition = ({ expanded, children }) => {
-  return (
-    <div
-      className={`transition-all duration-300 overflow-hidden ${
-        expanded ? 'max-h-[10000px] opacity-100' : 'max-h-0 opacity-0'
-      }`}
-    >
-      {children}
-    </div>
-  );
-};
-
-export const Form = ({ form, addButtonText, children }) => {
+export const Form = ({
+  form,
+  addButtonText,
+  children,
+}: {
+  form: ShowForm;
+  addButtonText?: string;
+  children: React.ReactNode;
+}) => {
   const showForm = useAppSelector(selectShowByForm(form));
   const heading = useAppSelector(selectHeadingByForm(form));
+
   const dispatch = useAppDispatch();
-
-  const setShowForm = (show) => {
-    dispatch(changeShowForm({ field: form, value: show }));
+  const setShowForm = (showForm: boolean) => {
+    dispatch(changeShowForm({ field: form, value: showForm }));
   };
-
-  const setHeading = (value) => {
-    dispatch(changeFormHeading({ field: form, value }));
+  const setHeading = (heading: string) => {
+    dispatch(changeFormHeading({ field: form, value: heading }));
   };
 
   const isFirstForm = useAppSelector(selectIsFirstForm(form));
   const isLastForm = useAppSelector(selectIsLastForm(form));
 
-  const handleMoveClick = (type) => {
+  const handleMoveClick = (type: "up" | "down") => {
     dispatch(changeFormOrder({ form, type }));
   };
 
@@ -78,7 +86,7 @@ export const Form = ({ form, addButtonText, children }) => {
   return (
     <BaseForm
       className={`transition-opacity duration-200 ${
-        showForm ? 'pb-6' : 'pb-2 opacity-60'
+        showForm ? "pb-6" : "pb-2 opacity-60"
       }`}
     >
       <div className="flex items-center justify-between gap-4">
@@ -132,15 +140,21 @@ export const FormSection = ({
   showMoveDown,
   showDelete,
   deleteButtonTooltipText,
-  children
+  children,
+}: {
+  form: ShowForm;
+  idx: number;
+  showMoveUp: boolean;
+  showMoveDown: boolean;
+  showDelete: boolean;
+  deleteButtonTooltipText: string;
+  children: React.ReactNode;
 }) => {
   const dispatch = useAppDispatch();
-
   const handleDeleteClick = () => {
     dispatch(deleteSectionInFormByIdx({ form, idx }));
   };
-
-  const handleMoveClick = (direction) => {
+  const handleMoveClick = (direction: "up" | "down") => {
     dispatch(moveSectionInForm({ form, direction, idx }));
   };
 
@@ -151,32 +165,32 @@ export const FormSection = ({
       )}
       <div className="relative grid grid-cols-6 gap-3">
         {children}
-        <div className="absolute right-0 top-0 flex gap-0.5">
+        <div className={`absolute right-0 top-0 flex gap-0.5 `}>
           <div
             className={`transition-all duration-300 ${
-              showMoveUp ? '' : 'invisible opacity-0'
-            } ${showMoveDown ? '' : '-mr-6'}`}
+              showMoveUp ? "" : "invisible opacity-0"
+            } ${showMoveDown ? "" : "-mr-6"}`}
           >
             <MoveIconButton
               type="up"
               size="small"
-              onClick={() => handleMoveClick('up')}
+              onClick={() => handleMoveClick("up")}
             />
           </div>
           <div
             className={`transition-all duration-300 ${
-              showMoveDown ? '' : 'invisible opacity-0'
+              showMoveDown ? "" : "invisible opacity-0"
             }`}
           >
             <MoveIconButton
               type="down"
               size="small"
-              onClick={() => handleMoveClick('down')}
+              onClick={() => handleMoveClick("down")}
             />
           </div>
           <div
             className={`transition-all duration-300 ${
-              showDelete ? '' : 'invisible opacity-0'
+              showDelete ? "" : "invisible opacity-0"
             }`}
           >
             <DeleteIconButton
@@ -189,4 +203,3 @@ export const FormSection = ({
     </>
   );
 };
-

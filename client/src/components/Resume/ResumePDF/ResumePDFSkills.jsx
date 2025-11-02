@@ -35,7 +35,7 @@ export const ResumePDFSkills = ({
                     fontSize: 10,
                     flex: 1,
                     color: '#111827',
-                    fontWeight: 800
+                    fontWeight: 700 // skill bold only
                   }}
                 >
                   {skill}

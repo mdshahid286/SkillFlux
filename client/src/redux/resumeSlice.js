@@ -27,7 +27,15 @@ const initialEducation = {
 const initialProject = {
   project: '',
   date: '',
-  descriptions: []
+  descriptions: [],
+  url: ''
+};
+
+const initialCertification = {
+  name: '',
+  issuer: '',
+  date: '',
+  url: ''
 };
 
 const initialSkills = {
@@ -48,6 +56,7 @@ const initialResumeState = {
   workExperiences: [initialWorkExperience],
   educations: [initialEducation],
   projects: [initialProject],
+  certifications: [initialCertification],
   skills: initialSkills,
   custom: initialCustom
 };
@@ -75,6 +84,11 @@ export const resumeSlice = createSlice({
       const project = state.projects[idx];
       project[field] = value;
     },
+    changeCertifications: (state, action) => {
+      const { idx, field, value } = action.payload;
+      const certification = state.certifications[idx];
+      certification[field] = value;
+    },
     changeSkills: (state, action) => {
       const { field, value, idx, skill, rating } = action.payload;
       if (field === 'featuredSkills') {
@@ -98,6 +112,9 @@ export const resumeSlice = createSlice({
           break;
         case 'projects':
           state.projects.push(initialProject);
+          break;
+        case 'certifications':
+          state.certifications.push(initialCertification);
           break;
         default:
           break;
@@ -125,6 +142,7 @@ export const {
   changeWorkExperiences,
   changeEducations,
   changeProjects,
+  changeCertifications,
   changeSkills,
   changeCustom,
   addSectionInForm,
@@ -138,6 +156,7 @@ export const selectProfile = (state) => state.resume.profile;
 export const selectWorkExperiences = (state) => state.resume.workExperiences;
 export const selectEducations = (state) => state.resume.educations;
 export const selectProjects = (state) => state.resume.projects;
+export const selectCertifications = (state) => state.resume.certifications;
 export const selectSkills = (state) => state.resume.skills;
 export const selectCustom = (state) => state.resume.custom;
 export const selectResume = (state) => state.resume;

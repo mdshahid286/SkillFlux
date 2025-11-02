@@ -44,9 +44,9 @@ export const ResumePDFEducation = ({
               <Text
                 style={{
                   fontSize: 10,
-                  color: themeColor,
+                  color: '#111827', // changed to black
                   marginTop: 1,
-                  fontWeight: 800
+                  fontWeight: 500 // degree line normal weight
                 }}
               >
                 {degreeWithGPA}
