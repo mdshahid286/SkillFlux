@@ -24,24 +24,35 @@ export const Resume = () => {
 		const wrapper = wrapperRef.current;
 		const paper = paperRef.current;
 		if (!wrapper || !paper) return;
-		const wrapperRect = wrapper.getBoundingClientRect();
-		const paperRect = paper.getBoundingClientRect();
-		if (paperRect.width === 0 || paperRect.height === 0) return;
-		const PAD = 24; // px padding around
-		if (mode === 'fitWidth') {
-			const unscaledWidth = paperRect.width / scale;
-			const fitWidthScale = (wrapperRect.width - PAD * 2) / unscaledWidth;
-			setScale(Math.max(0.5, Math.min(1.5, fitWidthScale)));
-			setViewMode('fitWidth');
-		} else if (mode === 'fitPage') {
-			const unscaledWidth = paperRect.width / scale;
-			const unscaledHeight = paperRect.height / scale;
-			const fitW = (wrapperRect.width - PAD * 2) / unscaledWidth;
-			const fitH = (wrapperRect.height - PAD * 2) / unscaledHeight;
-			const fitPageScale = Math.max(0.5, Math.min(1.5, Math.min(fitW, fitH)));
-			setScale(fitPageScale);
-			setViewMode('fitPage');
-		}
+		
+		// Wait for next frame to ensure layout is complete
+		requestAnimationFrame(() => {
+			const wrapperRect = wrapper.getBoundingClientRect();
+			if (wrapperRect.width === 0 || wrapperRect.height === 0) return;
+			
+			// Convert paper dimensions to pixels
+			// A4: 210mm = 793.7px at 96 DPI, 8.5in = 816px at 96 DPI
+			const isA4 = settings.documentSize === 'A4';
+			const paperWidthPx = isA4 ? 793.7 : 816; // Approximate pixel width at 96 DPI
+			const paperHeightPx = isA4 ? 1123 : 1056; // Approximate pixel height at 96 DPI
+			
+			const PAD = 48; // px padding around (24px on each side)
+			if (mode === 'fitWidth') {
+				// Use the wrapper's actual width minus padding
+				const availableWidth = wrapperRect.width - PAD;
+				const fitWidthScale = availableWidth / paperWidthPx;
+				setScale(Math.max(0.5, Math.min(1.5, fitWidthScale)));
+				setViewMode('fitWidth');
+			} else if (mode === 'fitPage') {
+				const availableWidth = wrapperRect.width - PAD;
+				const availableHeight = wrapperRect.height - PAD;
+				const fitW = availableWidth / paperWidthPx;
+				const fitH = availableHeight / paperHeightPx;
+				const fitPageScale = Math.max(0.5, Math.min(1.5, Math.min(fitW, fitH)));
+				setScale(fitPageScale);
+				setViewMode('fitPage');
+			}
+		});
 	};
 
 	useLayoutEffect(() => {
@@ -63,11 +74,18 @@ export const Resume = () => {
 	const paperMinHeight = settings.documentSize === 'A4' ? '297mm' : '11in';
 
 	return (
-		<div className="relative flex h-full flex-col">
+		<div className="relative flex h-full flex-col" style={{ overflow: 'hidden' }}>
 			<div
 				ref={wrapperRef}
-				className="flex-1 overflow-auto bg-gray-50"
-				style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: 24 }}
+				className="flex-1 bg-gray-50 resume-preview-wrapper"
+				style={{ 
+					display: 'flex', 
+					justifyContent: 'center', 
+					alignItems: 'flex-start', 
+					padding: 24,
+					overflowY: 'auto',
+					overflowX: 'hidden'
+				}}
 			>
 				<div style={{ transform: `scale(${scale})`, transformOrigin: 'top center', transition: 'transform 0.2s ease' }}>
 					<div

@@ -1,7 +1,7 @@
 /* Resume Builder Styles - Based on OpenResume Design */
 
 .section-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -61,19 +61,21 @@
 
 .form-input {
   padding: 1rem 1.2rem;
-  border: 2px solid #e0e3ea;
+  border: 2px solid rgba(141, 103, 72, 0.2);
   border-radius: 0.8rem;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: #fff;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
   color: #333;
+  box-shadow: 0 2px 8px rgba(141, 103, 72, 0.05);
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--brown);
-  box-shadow: 0 0 0 4px rgba(141, 103, 72, 0.1);
+  box-shadow: 0 0 0 4px rgba(141, 103, 72, 0.15), 0 4px 12px rgba(141, 103, 72, 0.1);
   transform: translateY(-2px);
+  background: #ffffff;
 }
 
 .form-input::placeholder {
@@ -82,22 +84,24 @@
 
 .form-textarea {
   padding: 1rem 1.2rem;
-  border: 2px solid #e0e3ea;
+  border: 2px solid rgba(141, 103, 72, 0.2);
   border-radius: 0.8rem;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: #fff;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
   color: #333;
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
+  box-shadow: 0 2px 8px rgba(141, 103, 72, 0.05);
 }
 
 .form-textarea:focus {
   outline: none;
   border-color: var(--brown);
-  box-shadow: 0 0 0 4px rgba(141, 103, 72, 0.1);
+  box-shadow: 0 0 0 4px rgba(141, 103, 72, 0.15), 0 4px 12px rgba(141, 103, 72, 0.1);
   transform: translateY(-2px);
+  background: #ffffff;
 }
 
 .form-textarea::placeholder {
@@ -105,17 +109,19 @@
 }
 
 .item-card {
-  background: #f8f9fa;
-  border: 1px solid #e0e3ea;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border: 2px solid rgba(141, 103, 72, 0.15);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  margin-bottom: 1.8rem;
   transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(141, 103, 72, 0.1);
 }
 
 .item-card:hover {
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(141, 103, 72, 0.2);
+  transform: translateY(-4px);
+  border-color: var(--brown);
 }
 
 .item-header {
@@ -547,19 +553,19 @@ label.action-btn {
 
 /* Enhanced item cards */
 .item-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border: 2px solid rgba(141, 103, 72, 0.15);
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: 2.5rem;
   margin-bottom: 1.8rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 24px rgba(141, 103, 72, 0.1);
 }
 
 .item-card:hover {
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 16px 48px rgba(141, 103, 72, 0.2);
   transform: translateY(-4px);
-  border-color: #3b82f6;
+  border-color: var(--brown);
 }
 
 /* Enhanced skill tags */

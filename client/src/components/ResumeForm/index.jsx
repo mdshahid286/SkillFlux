@@ -30,13 +30,10 @@ export const ResumeForm = () => {
 
   return (
     <div
-      className={`flex justify-center md:h-[calc(100vh-120px)] md:justify-end md:overflow-y-scroll ${
-        isHover ? 'scrollbar-thumb-gray-300' : 'scrollbar-thumb-gray-200'
-      } scrollbar-thin scrollbar-track-gray-100`}
-      onMouseOver={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
+      className="flex justify-center h-full"
+      style={{ overflowY: 'auto', overflowX: 'hidden' }}
     >
-      <section className="flex max-w-2xl flex-col gap-8 p-6">
+      <section className="flex max-w-4xl flex-col gap-8 p-6" style={{ width: '100%', maxWidth: '1000px' }}>
         <ProfileForm />
         {formsOrder.map((form) => {
           const Component = formTypeToComponent[form];

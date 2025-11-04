@@ -183,11 +183,21 @@ const parsePDFFile = async (file, onSuccess, onError) => {
     // Dynamic import to avoid build issues if pdfjs-dist is not installed
     const pdfjsLib = await import('pdfjs-dist');
     
-    // Set worker source
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    // Set worker source - use jsdelivr CDN with legacy build
+    // For pdfjs-dist v5.x, we need to use the legacy build worker
+    const version = pdfjsLib.version || '5.4.394';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/legacy/build/pdf.worker.min.mjs`;
+    
+    // Disable worker if CDN fails (will use main thread, slower but works)
+    // pdfjsLib.GlobalWorkerOptions.workerSrc = false;
     
     const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+    const pdf = await pdfjsLib.getDocument({
+      data: arrayBuffer,
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      useSystemFonts: true
+    }).promise;
     
     let fullText = '';
     
@@ -202,7 +212,31 @@ const parsePDFFile = async (file, onSuccess, onError) => {
     const parsedData = parseResumeFromText(fullText);
     onSuccess(parsedData);
   } catch (error) {
-    onError('Error parsing PDF file: ' + error.message + '. Please ensure pdfjs-dist is installed.');
+    console.error('PDF parsing error:', error);
+    // Try fallback without worker
+    try {
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = false; // Disable worker
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({
+        data: arrayBuffer,
+        useWorkerFetch: false,
+        isEvalSupported: false
+      }).promise;
+      
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n';
+      }
+      
+      const parsedData = parseResumeFromText(fullText);
+      onSuccess(parsedData);
+    } catch (fallbackError) {
+      onError('Error parsing PDF file: ' + fallbackError.message + '. Please ensure pdfjs-dist is installed and the file is a valid PDF.');
+    }
   }
 };
 

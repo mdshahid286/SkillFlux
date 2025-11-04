@@ -172,52 +172,77 @@ function HeroSection({ onSeeHowItWorks, onNav, user }) {
           <span className="trust-logo-placeholder" style={{background: 'var(--accent)'}} />
         </div>
       </div>
-      <div className="hero-right futuristic-fade-in hero-orbit-wrap">
+      <div className="hero-right futuristic-fade-in hero-network-wrap">
         <div className="hero-visual-bg">
-          {/* Layered animated blobs for depth */}
-          <svg width="340" height="340" viewBox="0 0 340 340" fill="none" className="hero-blob-bg blob1">
-            <defs><radialGradient id="blobGradient1" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#e6ded7" stopOpacity="0.78"/><stop offset="75%" stopColor="#bfae9e" stopOpacity="0.38"/><stop offset="100%" stopColor="#a89f91" stopOpacity="0.14"/></radialGradient></defs>
-            <path>
-              <animate attributeName="d" dur="8s" repeatCount="indefinite"
-                values="M170,320 Q250,290 310,170 Q250,60 170,40 Q90,60 30,170 Q90,290 170,320Z;
-                        M170,320 Q255,265 320,170 Q255,60 170,60 Q85,60 20,170 Q85,265 170,320Z;
-                        M170,320 Q250,290 310,170 Q250,60 170,40 Q90,60 30,170 Q90,290 170,320Z"/>
-            </path>
-            <path d="M170,320 Q250,290 310,170 Q250,60 170,40 Q90,60 30,170 Q90,290 170,320Z" fill="url(#blobGradient1)"/>
+          {/* Particle Network Visualization */}
+          <svg className="particle-network" width="400" height="400" viewBox="0 0 400 400">
+            <defs>
+              <linearGradient id="particleGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#8d6748" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#bfae9e" stopOpacity="0.3" />
+              </linearGradient>
+              <linearGradient id="particleGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#bfae9e" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#e6ded7" stopOpacity="0.2" />
+              </linearGradient>
+              <linearGradient id="centerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#8d6748" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#bfae9e" stopOpacity="0.7" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            
+            {/* Connection lines */}
+            <g className="connections">
+              <line x1="80" y1="120" x2="200" y2="100" className="connection-line" />
+              <line x1="320" y1="120" x2="200" y2="100" className="connection-line" />
+              <line x1="200" y1="100" x2="200" y2="200" className="connection-line" />
+              <line x1="200" y1="200" x2="120" y2="280" className="connection-line" />
+              <line x1="200" y1="200" x2="280" y2="280" className="connection-line" />
+              <line x1="120" y1="280" x2="80" y2="320" className="connection-line" />
+              <line x1="280" y1="280" x2="320" y2="320" className="connection-line" />
+              <line x1="200" y1="100" x2="150" y2="180" className="connection-line" />
+              <line x1="200" y1="100" x2="250" y2="180" className="connection-line" />
+            </g>
+            
+            {/* Particles/Nodes */}
+            <g className="particles">
+              <circle cx="80" cy="120" r="16" className="particle-node node-1" />
+              <circle cx="200" cy="100" r="20" className="particle-node node-center" fill="url(#centerGradient)" />
+              <circle cx="320" cy="120" r="16" className="particle-node node-2" />
+              <circle cx="200" cy="200" r="18" className="particle-node node-3" />
+              <circle cx="120" cy="280" r="15" className="particle-node node-4" />
+              <circle cx="280" cy="280" r="15" className="particle-node node-5" />
+              <circle cx="80" cy="320" r="14" className="particle-node node-6" />
+              <circle cx="320" cy="320" r="14" className="particle-node node-7" />
+              <circle cx="150" cy="180" r="14" className="particle-node node-8" />
+              <circle cx="250" cy="180" r="14" className="particle-node node-9" />
+            </g>
+            
+            {/* Animated pulse rings */}
+            <circle cx="200" cy="200" r="80" className="pulse-ring ring-1" />
+            <circle cx="200" cy="200" r="80" className="pulse-ring ring-2" />
           </svg>
-          <svg width="340" height="340" viewBox="0 0 340 340" fill="none" className="hero-blob-bg blob2">
-            <defs><radialGradient id="blobGradient2" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#bfae9e" stopOpacity="0.15"/><stop offset="80%" stopColor="#8d6748" stopOpacity="0.04"/><stop offset="100%" stopColor="#fff" stopOpacity="0.07"/></radialGradient></defs>
-            <path>
-              <animate attributeName="d" dur="9.5s" repeatCount="indefinite" values="M170,320 Q230,290 300,170 Q240,60 170,60 Q100,60 40,170 Q100,290 170,320Z; M170,320 Q250,300 300,170 Q240,60 170,60 Q110,60 30,170 Q110,275 170,320Z; M170,320 Q230,290 300,170 Q240,60 170,60 Q100,60 40,170 Q100,290 170,320Z"/>
-            </path>
-            <path d="M170,320 Q230,290 300,170 Q240,60 170,60 Q100,60 40,170 Q100,290 170,320Z" fill="url(#blobGradient2)"/>
-          </svg>
-          {/* AI badge with glass and shine sweep */}
-          <div className="ai-badge-glow">
-            <div className="ai-badge-inner">
-              <span role="img" aria-label="AI" className="flash-icon">⚡</span>
-              <span className="ai-badge-label">AI</span>
-            </div>
-            {/* Shine sweep */}
-            <div className="shine-sweep badge-shine" />
-          </div>
-          {/* Floating feature icons on glass, each with a shine sweep */}
-          <div className="hero-feature-icons">
-            <div className="feature-icon-card">
+          
+          {/* Floating feature icons */}
+          <div className="hero-feature-icons-network">
+            <div className="feature-icon-network" style={{ top: '15%', left: '10%' }}>
               <span className="icon-emoji">🧩</span>
-              <div className="shine-sweep icon-shine" />
             </div>
-            <div className="feature-icon-card">
+            <div className="feature-icon-network" style={{ top: '15%', right: '10%' }}>
               <span className="icon-emoji">🧠</span>
-              <div className="shine-sweep icon-shine" />
             </div>
-            <div className="feature-icon-card">
+            <div className="feature-icon-network" style={{ bottom: '20%', left: '10%' }}>
               <span className="icon-emoji">🗺️</span>
-              <div className="shine-sweep icon-shine" />
             </div>
-            <div className="feature-icon-card">
+            <div className="feature-icon-network" style={{ bottom: '20%', right: '10%' }}>
               <span className="icon-emoji">📰</span>
-              <div className="shine-sweep icon-shine" />
             </div>
           </div>
         </div>
@@ -295,37 +320,364 @@ function HowItWorks() {
   );
 }
 
+function AboutUs() {
+  const timelineItems = [
+    {
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      title: 'OUR MISSION',
+      description: 'To democratize career growth by providing AI-powered, personalized learning pathways that help individuals unlock their full potential and achieve their professional dreams.'
+    },
+    {
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="9" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      title: 'OUR VISION',
+      description: 'A world where every professional has access to intelligent career guidance, making skill development accessible, personalized, and achievable for everyone, regardless of their starting point.'
+    },
+    {
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" strokeLinecap="round" strokeLinejoin="round"/>
+          <polyline points="22 4 12 14.01 9 11.01" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      title: 'WHAT WE DO',
+      description: 'We combine cutting-edge AI technology with expert career insights to create personalized learning roadmaps, analyze resumes, and provide the tools you need to advance your career.'
+    }
+  ];
+
+  return (
+    <section className="about-us" style={{ padding: '4rem 1rem', background: 'linear-gradient(180deg, #f5f5f3 0%, #ffffff 100%)', position: 'relative', overflow: 'hidden' }}>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .about-us::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, var(--brown), transparent);
+        }
+      `}</style>
+      <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative' }}>
+        <h2 style={{ 
+          textAlign: 'center', 
+          marginBottom: '3rem', 
+          color: 'var(--brown)', 
+          fontSize: '2.2rem', 
+          letterSpacing: '0.08em',
+          animation: 'fadeInUp 0.8s ease-out'
+        }}>ABOUT US</h2>
+        
+        {/* Timeline */}
+        <div style={{ position: 'relative', paddingLeft: '2rem', paddingRight: '2rem' }}>
+          {/* Vertical line */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            top: 0,
+            bottom: 0,
+            width: '3px',
+            background: 'linear-gradient(180deg, var(--brown), #bfae9e, var(--brown))',
+            transform: 'translateX(-50%)',
+            zIndex: 0
+          }} />
+
+          {/* Timeline items */}
+          {timelineItems.map((item, index) => {
+            const isLeft = index % 2 === 0;
+            const animationDelay = 0.2 + (index * 0.2);
+            
+            return (
+              <div
+                key={index}
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: isLeft ? 'flex-start' : 'flex-end',
+                  marginBottom: '3rem',
+                  animation: `fadeInUp 0.8s ease-out ${animationDelay}s both`,
+                  zIndex: 1
+                }}
+              >
+                <div style={{
+                  width: 'calc(50% - 2rem)',
+                  maxWidth: '450px',
+                  padding: '1.8rem',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
+                  borderRadius: '1rem',
+                  boxShadow: '0 8px 24px rgba(141,103,72,0.15)',
+                  border: '1px solid rgba(141,103,72,0.2)',
+                  position: 'relative',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(141,103,72,0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(141,103,72,0.15)';
+                }}
+                >
+                  {/* Icon */}
+                  <div style={{
+                    position: 'absolute',
+                    [isLeft ? 'right' : 'left']: '-3.5rem',
+                    top: '1.5rem',
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, var(--brown), #bfae9e)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    boxShadow: '0 6px 20px rgba(141,103,72,0.3)',
+                    border: '4px solid #ffffff',
+                    zIndex: 2
+                  }}>
+                    {item.icon}
+                  </div>
+
+                  {/* Connector line to center */}
+                  <div style={{
+                    position: 'absolute',
+                    [isLeft ? 'right' : 'left']: '-2rem',
+                    top: '2.5rem',
+                    width: '1.5rem',
+                    height: '2px',
+                    background: 'var(--brown)',
+                    zIndex: 1
+                  }} />
+
+                  <h3 style={{
+                    color: 'var(--brown)',
+                    fontSize: '1.2rem',
+                    marginBottom: '0.8rem',
+                    fontWeight: 700,
+                    marginTop: '0.5rem'
+                  }}>{item.title}</h3>
+                  <p style={{
+                    color: '#555',
+                    lineHeight: '1.7',
+                    fontSize: '0.95rem',
+                    margin: 0
+                  }}>{item.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom summary */}
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '1.5rem', 
+          background: 'linear-gradient(135deg, rgba(191,174,158,0.1) 0%, rgba(230,222,215,0.1) 100%)',
+          borderRadius: '1.2rem',
+          border: '1px solid rgba(141,103,72,0.15)',
+          animation: 'fadeInUp 0.8s ease-out 0.8s both',
+          marginTop: '2rem'
+        }}>
+          <p style={{ color: '#666', fontSize: '1rem', lineHeight: '1.7', maxWidth: 800, margin: '0 auto' }}>
+            <strong style={{ color: 'var(--brown)' }}>SkillFlux</strong> is more than just a platform—it's your career companion. 
+            We understand that everyone's career journey is unique, and we're here to provide the personalized guidance 
+            and resources you need to succeed in today's competitive job market.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FeatureGrid() {
   const features = [
-    { title: 'AI Plan Generation', desc: 'Gemini analyzes your past skills + goals to build a tailored weekly roadmap and tips.', icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#8d6748" strokeWidth="3" fill="#f5f5f3" /><path d="M12 20h16" stroke="#8d6748" strokeWidth="3" strokeLinecap="round" /><path d="M12 14h10" stroke="#bfae9e" strokeWidth="3" strokeLinecap="round" /></svg>
-    ) },
-    { title: 'Roadmap + Resources', desc: '8-week plan with topics, projects, and curated YouTube videos, books, and courses.', icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#bfae9e" strokeWidth="3" fill="#f5f5f3" /><path d="M10 26L20 16l10 10" stroke="#8d6748" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-    ) },
-    { title: 'Inline Profile Editing', desc: 'Edit your profile in a beautiful modal. Save updates instantly to Firestore.', icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#8d6748" strokeWidth="3" fill="#f5f5f3" /><path d="M24 14l2 2-10 10-3 1 1-3 10-10z" stroke="#8d6748" strokeWidth="2"/></svg>
-    ) },
-    { title: 'Resume Builder', desc: 'Craft a polished resume aligned to your target role.', icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="4" fill="#f5f5f3" stroke="#bfae9e" strokeWidth="3" /><path d="M14 16h12M14 20h12M14 24h8" stroke="#8d6748" strokeWidth="2"/></svg>
-    ) },
-    { title: 'Aptitude Prep', desc: 'Sharpen logic and quantitative skills with curated practice.', icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#bfae9e" strokeWidth="3" fill="#f5f5f3" /><path d="M20 12v16M12 20h16" stroke="#8d6748" strokeWidth="3" strokeLinecap="round"/></svg>
-    ) },
-    { title: 'Tech News', desc: 'Stay inspired with timely, curated tech headlines.', icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="8" y="10" width="24" height="20" rx="4" fill="#f5f5f3" stroke="#8d6748" strokeWidth="3" /><path d="M12 16h16M12 20h16M12 24h10" stroke="#8d6748" strokeWidth="2"/></svg>
-    ) },
+    { 
+      title: 'AI-Powered Resume Analysis', 
+      desc: 'Get instant ATS scoring and detailed feedback on your resume using advanced AI technology. Identify strengths, weaknesses, and actionable improvements.',
+      icon: (
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#8d6748" strokeWidth="3" fill="#f5f5f3" /><path d="M12 20h16" stroke="#8d6748" strokeWidth="3" strokeLinecap="round" /><path d="M12 14h10" stroke="#bfae9e" strokeWidth="3" strokeLinecap="round" /></svg>
+      ),
+      color: 'linear-gradient(135deg, #8d6748, #bfae9e)',
+      iconSize: 56,
+      iconShape: 'circle',
+      accent: 'left'
+    },
+    { 
+      title: 'Personalized Learning Roadmap', 
+      desc: 'AI-generated 8-week plans tailored to your skills, goals, and learning style. Includes topics, projects, and curated resources from YouTube, books, and courses.',
+      icon: (
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#bfae9e" strokeWidth="3" fill="#f5f5f3" /><path d="M10 26L20 16l10 10" stroke="#8d6748" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      ),
+      color: 'linear-gradient(135deg, #bfae9e, #8d6748)',
+      iconSize: 64,
+      iconShape: 'square',
+      accent: 'top'
+    },
+    { 
+      title: 'Professional Resume Builder', 
+      desc: 'Create ATS-friendly, professionally designed resumes with our intuitive builder. Export to PDF and customize themes to match your style.',
+      icon: (
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="4" fill="#f5f5f3" stroke="#bfae9e" strokeWidth="3" /><path d="M14 16h12M14 20h12M14 24h8" stroke="#8d6748" strokeWidth="2"/></svg>
+      ),
+      color: 'linear-gradient(135deg, #8d6748, #c7b299)',
+      iconSize: 56,
+      iconShape: 'circle',
+      accent: 'right'
+    },
+    { 
+      title: 'Aptitude Test Preparation', 
+      desc: 'Sharpen your logical reasoning, quantitative, and verbal skills with our comprehensive aptitude test preparation system. Practice makes perfect!',
+      icon: (
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#bfae9e" strokeWidth="3" fill="#f5f5f3" /><path d="M20 12v16M12 20h16" stroke="#8d6748" strokeWidth="3" strokeLinecap="round"/></svg>
+      ),
+      color: 'linear-gradient(135deg, #c7b299, #8d6748)',
+      iconSize: 60,
+      iconShape: 'square',
+      accent: 'bottom'
+    },
+    { 
+      title: 'Real-Time Tech News', 
+      desc: 'Stay ahead of the curve with curated tech industry news and trends. Get insights that matter for your career development and industry knowledge.',
+      icon: (
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><rect x="8" y="10" width="24" height="20" rx="4" fill="#f5f5f3" stroke="#8d6748" strokeWidth="3" /><path d="M12 16h16M12 20h16M12 24h10" stroke="#8d6748" strokeWidth="2"/></svg>
+      ),
+      color: 'linear-gradient(135deg, #8d6748, #bfae9e)',
+      iconSize: 56,
+      iconShape: 'circle',
+      accent: 'left'
+    },
+    { 
+      title: 'Profile Management', 
+      desc: 'Edit and manage your profile seamlessly with our beautiful inline editing interface. Track your progress and update your skills in real-time.',
+      icon: (
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#8d6748" strokeWidth="3" fill="#f5f5f3" /><path d="M24 14l2 2-10 10-3 1 1-3 10-10z" stroke="#8d6748" strokeWidth="2"/></svg>
+      ),
+      color: 'linear-gradient(135deg, #bfae9e, #c7b299)',
+      iconSize: 64,
+      iconShape: 'square',
+      accent: 'top'
+    },
   ];
   return (
-    <section className="features">
-      <div className="features-container">
-        {features.map((f, i) => (
-          <div className="feature-card enhanced" key={i} style={{ animationDelay:`${0.05 * i + 0.1}s` }}>
-            <div className="feature-icon-row">{f.icon}</div>
-            <div className="feature-title">{f.title}</div>
-            <div className="feature-desc">{f.desc}</div>
+    <section className="features animated-gradient-bg" style={{ padding: '4rem 1rem', position: 'relative' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h2 style={{ 
+          textAlign: 'center', 
+          marginBottom: '1rem', 
+          color: 'var(--brown)', 
+          fontSize: '2.2rem', 
+          letterSpacing: '0.08em',
+          marginBottom: '2rem'
+        }}>FEATURES</h2>
+        <p style={{ 
+          textAlign: 'center', 
+          color: '#666', 
+          fontSize: '1rem', 
+          marginBottom: '2.5rem',
+          maxWidth: 600,
+          lineHeight: '1.6'
+        }}>
+          Everything you need to accelerate your career in one powerful platform
+        </p>
+        <div className="features-container" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+          gap: '1.5rem',
+          width: '100%',
+          maxWidth: '1000px',
+          margin: '0 auto',
+          justifyContent: 'center',
+          justifyItems: 'center'
+        }}>
+          {features.map((f, i) => {
+            const accentStyles = {
+              left: { borderLeft: '3px solid var(--brown)' },
+              right: { borderRight: '3px solid var(--brown)' },
+              top: { borderTop: '3px solid var(--brown)' },
+              bottom: { borderBottom: '3px solid var(--brown)' }
+            };
+            
+            const iconBorderRadius = f.iconShape === 'square' ? '12px' : '50%';
+            const bgVariation = i % 3 === 0 ? 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)' :
+                               i % 3 === 1 ? 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%)' :
+                               'linear-gradient(180deg, #fafafa 0%, #ffffff 100%)';
+            
+            return (
+              <div 
+                className="feature-card enhanced" 
+                key={i} 
+                style={{ 
+                  animationDelay: `${0.1 * i + 0.2}s`,
+                  padding: '1.8rem',
+                  background: bgVariation,
+                  border: '1px solid rgba(141,103,72,0.15)',
+                  ...accentStyles[f.accent],
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderRadius: f.iconShape === 'square' ? '16px' : '12px',
+                  width: '100%',
+                  maxWidth: '350px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 16px 32px rgba(141,103,72,0.2)';
+                  e.currentTarget.style.borderColor = 'var(--brown)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(141,103,72,0.15)';
+                }}
+              >
+                <div style={{ 
+                  width: f.iconSize, 
+                  height: f.iconSize, 
+                  borderRadius: iconBorderRadius, 
+                  background: f.color,
+                  display: 'grid', 
+                  placeItems: 'center', 
+                  marginBottom: '1.2rem',
+                  boxShadow: '0 6px 20px rgba(141,103,72,0.25)',
+                  transform: i % 2 === 0 ? 'rotate(-2deg)' : 'rotate(2deg)',
+                  transition: 'transform 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = i % 2 === 0 ? 'rotate(0deg) scale(1.1)' : 'rotate(0deg) scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = i % 2 === 0 ? 'rotate(-2deg)' : 'rotate(2deg)';
+                }}>
+                  {f.icon}
           </div>
-        ))}
+                <h3 className="feature-title" style={{ 
+                  fontSize: i % 2 === 0 ? '1.2rem' : '1.15rem', 
+                  marginBottom: '0.8rem', 
+                  color: 'var(--brown)',
+                  fontWeight: i % 2 === 0 ? 700 : 600
+                }}>{f.title}</h3>
+                <p className="feature-desc" style={{ 
+                  color: '#666', 
+                  lineHeight: '1.6', 
+                  fontSize: '0.95rem' 
+                }}>{f.desc}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -333,8 +685,46 @@ function FeatureGrid() {
 
 function SocialProof() {
   return (
-    <section className="social-proof">
-      <div className="social-proof-text">Join 10,000+ learners already transforming their careers</div>
+    <section className="social-proof" style={{
+      padding: '3rem 1rem',
+      background: 'linear-gradient(135deg, rgba(230,222,215,0.3) 0%, rgba(255,255,255,0.8) 100%)',
+      textAlign: 'center',
+      position: 'relative'
+    }}>
+      <div style={{
+        maxWidth: 800,
+        margin: '0 auto',
+        padding: '2rem',
+        background: 'rgba(255,255,255,0.6)',
+        borderRadius: '1.5rem',
+        border: '1px solid rgba(141,103,72,0.15)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.05)'
+      }}>
+        <h3 style={{
+          fontSize: '1.5rem',
+          fontWeight: 700,
+          color: 'var(--brown)',
+          marginBottom: '1rem',
+          letterSpacing: '0.03em'
+        }}>✨ We're Just Getting Started!</h3>
+        <p className="social-proof-text" style={{
+          fontSize: '1.1rem',
+          color: '#555',
+          lineHeight: '1.7',
+          margin: 0
+        }}>
+          SkillFlux is live and ready to help you grow! We're in our early days, which means 
+          you'll get personalized attention and help shape the platform as we evolve together.
+        </p>
+        <p style={{
+          fontSize: '0.95rem',
+          color: '#777',
+          marginTop: '1rem',
+          fontStyle: 'italic'
+        }}>
+          Be part of our growing community • Your feedback helps us improve every day
+        </p>
+      </div>
     </section>
   );
 }
@@ -354,12 +744,266 @@ function BigCTA({ onSeeHowItWorks }) {
 
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        <span>© {new Date().getFullYear()} CareerPath. All rights reserved.</span>
-        <span className="footer-links">
-          <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="#">Contact</a>
-        </span>
+    <footer className="footer" style={{
+      background: 'linear-gradient(180deg, #5a3f2a 0%, #4a3420 100%)',
+      color: '#fff',
+      padding: '4rem 1rem 2rem',
+      marginTop: '4rem',
+      position: 'relative'
+    }}>
+      <style>{`
+        .footer::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(230,222,215,0.3), transparent);
+        }
+      `}</style>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '3rem',
+          marginBottom: '3rem'
+        }}>
+          {/* Brand Section */}
+          <div>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              marginBottom: '1rem',
+              color: '#e6ded7',
+              letterSpacing: '0.05em'
+            }}>SkillFlux</h3>
+            <p style={{
+              color: '#b0b0b0',
+              lineHeight: '1.7',
+              marginBottom: '1.5rem',
+              fontSize: '0.95rem'
+            }}>
+              Your AI-powered career companion. Personalized learning pathways, resume analysis, and professional development tools.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <a href="#" style={{ 
+                width: 40, 
+                height: 40, 
+                borderRadius: '50%', 
+                background: 'rgba(230,222,215,0.1)',
+                display: 'grid',
+                placeItems: 'center',
+                transition: 'all 0.3s',
+                border: '1px solid rgba(230,222,215,0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(230,222,215,0.2)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(230,222,215,0.1)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}>
+                <svg width="20" height="20" fill="#e6ded7" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href="#" style={{ 
+                width: 40, 
+                height: 40, 
+                borderRadius: '50%', 
+                background: 'rgba(230,222,215,0.1)',
+                display: 'grid',
+                placeItems: 'center',
+                transition: 'all 0.3s',
+                border: '1px solid rgba(230,222,215,0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(230,222,215,0.2)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(230,222,215,0.1)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}>
+                <svg width="20" height="20" fill="#e6ded7" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              </a>
+              <a href="#" style={{ 
+                width: 40, 
+                height: 40, 
+                borderRadius: '50%', 
+                background: 'rgba(230,222,215,0.1)',
+                display: 'grid',
+                placeItems: 'center',
+                transition: 'all 0.3s',
+                border: '1px solid rgba(230,222,215,0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(230,222,215,0.2)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(230,222,215,0.1)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}>
+                <svg width="20" height="20" fill="#e6ded7" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 style={{
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              marginBottom: '1.5rem',
+              color: '#e6ded7',
+              letterSpacing: '0.03em'
+            }}>QUICK LINKS</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {[
+                { label: 'Home', path: '/' },
+                { label: 'Resume Analysis', path: '/resume' },
+                { label: 'Resume Builder', path: '/resume-builder' },
+                { label: 'Learning Roadmap', path: '/roadmap' },
+                { label: 'Tech News', path: '/news' },
+                { label: 'Aptitude Tests', path: '/aptitude' }
+              ].map((link, i) => (
+                <li key={i} style={{ marginBottom: '0.8rem' }}>
+                  <a href={link.path} style={{
+                    color: '#b0b0b0',
+                    textDecoration: 'none',
+                    transition: 'all 0.3s',
+                    fontSize: '0.95rem',
+                    display: 'inline-block'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#e6ded7';
+                    e.currentTarget.style.transform = 'translateX(5px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#b0b0b0';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}>
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 style={{
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              marginBottom: '1.5rem',
+              color: '#e6ded7',
+              letterSpacing: '0.03em'
+            }}>RESOURCES</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {[
+                { label: 'Help Center', path: '#' },
+                { label: 'Documentation', path: '#' },
+                { label: 'Blog', path: '#' },
+                { label: 'Career Tips', path: '#' },
+                { label: 'Success Stories', path: '#' },
+                { label: 'FAQ', path: '#' }
+              ].map((link, i) => (
+                <li key={i} style={{ marginBottom: '0.8rem' }}>
+                  <a href={link.path} style={{
+                    color: '#b0b0b0',
+                    textDecoration: 'none',
+                    transition: 'all 0.3s',
+                    fontSize: '0.95rem',
+                    display: 'inline-block'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#e6ded7';
+                    e.currentTarget.style.transform = 'translateX(5px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#b0b0b0';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}>
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact & Legal */}
+          <div>
+            <h4 style={{
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              marginBottom: '1.5rem',
+              color: '#e6ded7',
+              letterSpacing: '0.03em'
+            }}>CONTACT</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginBottom: '2rem' }}>
+              <li style={{ marginBottom: '0.8rem', color: '#b0b0b0', fontSize: '0.95rem' }}>
+                📧 support@skillflux.com
+              </li>
+              <li style={{ marginBottom: '0.8rem', color: '#b0b0b0', fontSize: '0.95rem' }}>
+                📞 +1 (555) 123-4567
+              </li>
+            </ul>
+            <div style={{ marginTop: '2rem' }}>
+              <a href="#" style={{
+                color: '#b0b0b0',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                marginRight: '1.5rem',
+                transition: 'color 0.3s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e6ded7'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#b0b0b0'}>
+                Privacy Policy
+              </a>
+              <a href="#" style={{
+                color: '#b0b0b0',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                marginRight: '1.5rem',
+                transition: 'color 0.3s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e6ded7'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#b0b0b0'}>
+                Terms of Service
+              </a>
+              <a href="#" style={{
+                color: '#b0b0b0',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                transition: 'color 0.3s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e6ded7'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#b0b0b0'}>
+                Cookie Policy
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div style={{
+          borderTop: '1px solid rgba(230,222,215,0.1)',
+          paddingTop: '2rem',
+          marginTop: '2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <p style={{ color: '#b0b0b0', fontSize: '0.9rem', margin: 0 }}>
+            © {new Date().getFullYear()} SkillFlux. All rights reserved.
+          </p>
+          <p style={{ color: '#b0b0b0', fontSize: '0.9rem', margin: 0 }}>
+            Built with ❤️ for career growth
+          </p>
+        </div>
       </div>
     </footer>
   );
@@ -626,6 +1270,15 @@ function OnboardingPage({ user }) {
 
   return (
     <div className="onboarding-page">
+      <div className="page-navigation">
+        <button className="nav-btn" onClick={() => navigate('/')} title="Home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9 22V12H15V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Home
+        </button>
+      </div>
       <div className="onboarding-container">
         <div className="onboarding-header">
           <div className="progress-bar">
@@ -693,6 +1346,7 @@ function OnboardingPage({ user }) {
           align-items: center;
           justify-content: center;
           padding: 2rem;
+          padding-top: 5rem;
           position: relative;
           overflow: hidden;
         }
@@ -722,17 +1376,23 @@ function OnboardingPage({ user }) {
         }
 
         .onboarding-container {
-          background: var(--card-glass);
+          background: #ffffff;
           backdrop-filter: blur(20px);
-          border-radius: 2rem;
-          padding: 3rem;
-          max-width: 650px;
+          border-radius: 1.5rem;
+          padding: 2rem;
+          max-width: 850px;
           width: 100%;
-          box-shadow: var(--shadow);
-          border: 1.5px solid var(--brown);
+          box-shadow: 0 8px 32px rgba(141, 103, 72, 0.12);
+          border: 1px solid rgba(141, 103, 72, 0.15);
           position: relative;
           z-index: 1;
           animation: fadeInUp 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+          transition: all 0.3s ease;
+        }
+
+        .onboarding-container:hover {
+          box-shadow: 0 12px 40px rgba(141, 103, 72, 0.16);
+          border-color: rgba(141, 103, 72, 0.2);
         }
 
         @keyframes fadeInUp {
@@ -747,45 +1407,43 @@ function OnboardingPage({ user }) {
         }
 
         .onboarding-header {
-          margin-bottom: 2.5rem;
+          margin-bottom: 1.5rem;
         }
 
         .progress-bar {
-          height: 8px;
-          background: rgba(141, 103, 72, 0.2);
-          border-radius: 4px;
+          height: 6px;
+          background: rgba(141, 103, 72, 0.15);
+          border-radius: 3px;
           overflow: hidden;
-          margin-bottom: 1.2rem;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+          margin-bottom: 1rem;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .progress-fill {
           height: 100%;
-          background: var(--primary-gradient-90);
-          border-radius: 4px;
+          background: linear-gradient(90deg, #6d4c2d 0%, #8d6748 100%);
+          border-radius: 3px;
           transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-          box-shadow: 0 2px 8px rgba(141, 103, 72, 0.3);
         }
 
         .step-indicator {
           text-align: center;
           color: var(--brown);
-          font-weight: 700;
-          font-size: 1rem;
-          letter-spacing: 0.05em;
-          text-shadow: 0 1px 3px rgba(141, 103, 72, 0.3);
+          font-weight: 600;
+          font-size: 0.9rem;
+          letter-spacing: 0.03em;
         }
 
         .onboarding-step {
           text-align: center;
-          margin-bottom: 2.5rem;
+          margin-bottom: 1.5rem;
         }
 
         .step-icon {
-          font-size: 4rem;
-          margin-bottom: 1.5rem;
+          font-size: 3rem;
+          margin-bottom: 1rem;
           animation: bounce 2s infinite;
-          filter: drop-shadow(0 4px 8px rgba(141, 103, 72, 0.3));
+          filter: drop-shadow(0 2px 6px rgba(141, 103, 72, 0.2));
         }
 
         @keyframes bounce {
@@ -796,55 +1454,55 @@ function OnboardingPage({ user }) {
 
         .step-title {
           font-family: 'Orbitron', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-          font-size: 2rem;
+          font-size: 1.5rem;
           color: var(--brown);
-          margin-bottom: 0.8rem;
+          margin-bottom: 0.5rem;
           font-weight: 700;
-          letter-spacing: 0.04em;
-          text-shadow: 0 2px 8px rgba(141, 103, 72, 0.3);
+          letter-spacing: 0.03em;
         }
 
         .step-subtitle {
-          color: #86523f;
-          font-size: 1.1rem;
-          margin-bottom: 2.5rem;
+          color: #666;
+          font-size: 0.95rem;
+          margin-bottom: 1.5rem;
           font-weight: 500;
         }
 
         .skill-grid, .goal-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 1.2rem;
-          margin-bottom: 1.5rem;
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 0.75rem;
+          margin-bottom: 1.25rem;
         }
 
         .experience-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1.2rem;
-          margin-bottom: 1.5rem;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 0.75rem;
+          margin-bottom: 1.25rem;
         }
 
         .learning-style-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-          gap: 1.2rem;
-          margin-bottom: 1.5rem;
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 0.75rem;
+          margin-bottom: 1.25rem;
         }
 
         .skill-option, .goal-option, .experience-option, .learning-style-option {
-          padding: 1.2rem 1rem;
-          border: 2px solid var(--accent);
-          border-radius: 1.2rem;
-          background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+          padding: 0.85rem 1rem;
+          border: 2px solid rgba(141, 103, 72, 0.2);
+          border-radius: 0.75rem;
+          background: #ffffff;
           cursor: pointer;
-          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           font-weight: 600;
           color: var(--brown);
           text-align: center;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+          box-shadow: 0 2px 8px rgba(141, 103, 72, 0.08);
+          font-size: 0.9rem;
         }
 
         .skill-option::before, .goal-option::before, .experience-option::before, .learning-style-option::before {
@@ -854,8 +1512,8 @@ function OnboardingPage({ user }) {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-          transition: left 0.5s;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          transition: left 0.4s;
         }
 
         .skill-option:hover::before, .goal-option:hover::before, .experience-option:hover::before, .learning-style-option:hover::before {
@@ -863,59 +1521,64 @@ function OnboardingPage({ user }) {
         }
 
         .skill-option:hover, .goal-option:hover, .experience-option:hover, .learning-style-option:hover {
-          border-color: var(--brown);
-          transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 8px 25px rgba(141, 103, 72, 0.25);
+          border-color: rgba(141, 103, 72, 0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(141, 103, 72, 0.15);
+          background: #fafafa;
         }
 
         .skill-option.selected, .goal-option.selected, .experience-option.selected, .learning-style-option.selected {
           border-color: var(--brown);
-          background: var(--primary-gradient-90);
+          background: linear-gradient(135deg, #6d4c2d 0%, #8d6748 100%);
           color: white;
-          transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 8px 25px rgba(141, 103, 72, 0.35);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(109, 76, 45, 0.3);
         }
 
         .experience-option {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.8rem;
-          padding: 1.5rem 1rem;
+          gap: 0.5rem;
+          padding: 1rem 1rem;
         }
 
         .experience-level {
-          font-size: 1.2rem;
-          font-weight: 800;
+          font-size: 1rem;
+          font-weight: 700;
           letter-spacing: 0.02em;
         }
 
         .experience-desc {
-          font-size: 0.95rem;
-          opacity: 0.9;
+          font-size: 0.8rem;
+          opacity: 0.85;
           font-weight: 500;
+        }
+
+        .experience-option.selected .experience-desc {
+          opacity: 0.95;
         }
 
         .learning-style-option {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.8rem;
-          padding: 1.5rem 1rem;
+          gap: 0.5rem;
+          padding: 1rem 1rem;
         }
 
         .style-icon {
-          font-size: 2rem;
-          filter: drop-shadow(0 2px 4px rgba(141, 103, 72, 0.2));
+          font-size: 1.5rem;
+          filter: drop-shadow(0 2px 4px rgba(141, 103, 72, 0.15));
         }
 
         .style-label {
-          font-size: 0.95rem;
+          font-size: 0.85rem;
           font-weight: 600;
         }
 
         .career-input-container {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.25rem;
           width: 100%;
           max-width: 100%;
         }
@@ -923,20 +1586,20 @@ function OnboardingPage({ user }) {
         .career-input {
           width: 100%;
           max-width: 100%;
-          padding: 1.2rem 1.8rem;
-          border: 2px solid var(--accent);
-          border-radius: 1.2rem;
-          font-size: 1.1rem;
-          background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+          padding: 0.85rem 1.25rem;
+          border: 2px solid rgba(141, 103, 72, 0.2);
+          border-radius: 0.75rem;
+          font-size: 0.95rem;
+          background: #ffffff;
           transition: all 0.3s ease;
           color: var(--brown);
           font-weight: 500;
-          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+          box-shadow: 0 2px 8px rgba(141, 103, 72, 0.08);
           box-sizing: border-box;
         }
 
         .custom-skill-container {
-          margin-top: 1.5rem;
+          margin-top: 1.25rem;
           width: 100%;
           max-width: 100%;
         }
@@ -944,23 +1607,24 @@ function OnboardingPage({ user }) {
         .custom-skill-input {
           width: 100%;
           max-width: 100%;
-          padding: 1.2rem 1.8rem;
-          border: 2px solid var(--accent);
-          border-radius: 1.2rem;
-          font-size: 1.1rem;
-          background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+          padding: 0.85rem 1.25rem;
+          border: 2px solid rgba(141, 103, 72, 0.2);
+          border-radius: 0.75rem;
+          font-size: 0.95rem;
+          background: #ffffff;
           transition: all 0.3s ease;
           color: var(--brown);
           font-weight: 500;
-          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+          box-shadow: 0 2px 8px rgba(141, 103, 72, 0.08);
           box-sizing: border-box;
         }
 
         .career-input:focus, .custom-skill-input:focus {
           outline: none;
           border-color: var(--brown);
-          box-shadow: 0 0 0 4px rgba(141, 103, 72, 0.15), 0 8px 25px rgba(141, 103, 72, 0.2);
-          transform: translateY(-2px);
+          box-shadow: 0 0 0 3px rgba(141, 103, 72, 0.12), 0 4px 12px rgba(141, 103, 72, 0.15);
+          transform: translateY(-1px);
+          background: #ffffff;
         }
 
         .career-input::placeholder, .custom-skill-input::placeholder {
@@ -972,17 +1636,17 @@ function OnboardingPage({ user }) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          gap: 1.5rem;
-          margin-top: 1rem;
+          gap: 1rem;
+          margin-top: 0.75rem;
         }
 
         .btn-primary, .btn-secondary {
-          padding: 1.2rem 2.5rem;
-          border-radius: 1.5rem;
-          font-weight: 700;
-          font-size: 1.1rem;
+          padding: 0.85rem 2rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          font-size: 0.95rem;
           cursor: pointer;
-          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+          transition: all 0.2s ease;
           border: none;
           letter-spacing: 0.02em;
           position: relative;
@@ -990,9 +1654,9 @@ function OnboardingPage({ user }) {
         }
 
         .btn-primary {
-          background: var(--primary-gradient-90);
+          background: linear-gradient(90deg, #6d4c2d 0%, #8d6748 100%);
           color: white;
-          box-shadow: 0 6px 20px rgba(141, 103, 72, 0.3);
+          box-shadow: 0 2px 8px rgba(109, 76, 45, 0.25);
         }
 
         .btn-primary::before {
@@ -1002,8 +1666,8 @@ function OnboardingPage({ user }) {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.5s;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+          transition: left 0.4s;
         }
 
         .btn-primary:hover::before {
@@ -1011,8 +1675,8 @@ function OnboardingPage({ user }) {
         }
 
         .btn-primary:hover:not(:disabled) {
-          transform: translateY(-3px) scale(1.05);
-          box-shadow: 0 12px 35px rgba(141, 103, 72, 0.4);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(109, 76, 45, 0.35);
         }
 
         .btn-primary:disabled {
@@ -1022,17 +1686,17 @@ function OnboardingPage({ user }) {
         }
 
         .btn-secondary {
-          background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+          background: #ffffff;
           color: var(--brown);
-          border: 2px solid var(--accent);
-          box-shadow: 0 4px 12px rgba(141, 103, 72, 0.1);
+          border: 1px solid rgba(141, 103, 72, 0.3);
+          box-shadow: 0 2px 6px rgba(141, 103, 72, 0.1);
         }
 
         .btn-secondary:hover {
-          background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
-          transform: translateY(-3px) scale(1.05);
-          box-shadow: 0 8px 25px rgba(141, 103, 72, 0.2);
-          border-color: var(--brown);
+          background: #fafafa;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 10px rgba(141, 103, 72, 0.15);
+          border-color: rgba(141, 103, 72, 0.4);
         }
 
         .error-message {
@@ -1654,6 +2318,7 @@ function App() {
         <div className="landing-page">
           <Navbar onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
           <HeroSection onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
+          <AboutUs />
           <QuickNav onNav={handleNav} />
           <HowItWorks ref={howItWorksRef} />
           <FeatureGrid />

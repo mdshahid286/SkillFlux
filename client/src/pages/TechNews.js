@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function TechNews() {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -152,6 +154,15 @@ export default function TechNews() {
   if (loading) {
     return (
       <div className="tech-news-page">
+        <div className="page-navigation">
+          <button className="nav-btn" onClick={() => navigate('/')} title="Home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M9 22V12H15V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Home
+          </button>
+        </div>
         <div className="tech-news-container">
           <div style={{ textAlign: 'center', padding: '3rem' }}>
             <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📰</div>
@@ -164,6 +175,15 @@ export default function TechNews() {
 
   return (
     <div className="tech-news-page">
+      <div className="page-navigation">
+        <button className="nav-btn" onClick={() => navigate('/')} title="Home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9 22V12H15V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Home
+        </button>
+      </div>
       <div className="tech-news-container">
         {/* Header */}
         <div style={{ 
