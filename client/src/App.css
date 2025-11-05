@@ -2276,14 +2276,14 @@ html, body, #root {
   overflow: hidden;
 }
 .login-modern-left {
-  flex: 1 1 54%;
+  flex: 1 1 50%;
   background: linear-gradient(120deg, #bfae9e 0%, #e6ded7 50%, #8d6748 100%);
   background-size: 200% 200%;
   animation: brownGradientMove 10s ease-in-out infinite;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 320px;
+  min-width: 300px;
   position: relative;
   z-index: 1;
   transition: background 0.7s;
@@ -2313,23 +2313,23 @@ html, body, #root {
   z-index: 3;
 }
 .login-modern-right {
-  flex: 1 1 46%;
+  flex: 1 1 50%;
   background: #f7fafd;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 320px;
+  min-width: 300px;
   position: relative;
   z-index: 1;
 }
 .login-modern-form {
   width: 100%;
-  max-width: 430px; /* slightly wider for signup */
+  max-width: 400px;
   background: none;
   display: flex;
   flex-direction: column;
-  align-items: center; /* center all form content horizontally */
-  padding: 0 2.5rem;
+  align-items: center;
+  padding: 0 2rem;
   margin: 0 auto;
   justify-content: center;
 }
@@ -2341,24 +2341,25 @@ html, body, #root {
   text-align: center;
   width: 100%;
   font-family: 'Orbitron', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-  font-size: 3rem;
-  color: #888;
-  margin: 0 0 2.5rem 0;
+  font-size: 2.2rem;
+  color: #666;
+  margin: 0 0 1.5rem 0;
   letter-spacing: 0.04em;
-  font-weight: 400;
+  font-weight: 600;
   text-shadow: none;
   align-self: flex-start;
 }
 .login-modern-field {
   width: 100%;
-  margin-bottom: 1.7rem;
+  margin-bottom: 1.1rem;
 }
 .login-modern-label {
-  font-size: 1.05rem;
-  color: #bbb;
-  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 0.25rem;
   display: block;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 .login-modern-input-row {
   display: flex;
@@ -2366,29 +2367,52 @@ html, body, #root {
   position: relative;
   gap: 0.7rem; /* add spacing between input and icons */
 }
-/* --- Login Modern Input: Make textbar bigger --- */
+/* --- Login Modern Input: Compact and elegant --- */
 .login-modern-input {
   flex: 1;
   border: none;
   border-bottom: 2px solid #e0e3ea;
   background: transparent;
-  font-size: 1.28rem;
-  padding: 0.85rem 0 0.85rem 0;
+  font-size: 1rem;
+  padding: 0.65rem 0 0.65rem 0;
   color: #222;
   outline: none;
-  transition: border-color 0.2s;
-  font-weight: 600;
-  min-height: 2.6rem;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  font-weight: 500;
+  min-height: 2.2rem;
   z-index: 1;
 }
 .login-modern-input:focus {
   border-bottom: 2px solid var(--brown);
+  box-shadow: 0 1px 0 0 var(--brown);
+}
+.login-modern-input::placeholder {
+  color: #bbb;
+  font-weight: 400;
+}
+select.login-modern-input {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 2rem;
+}
+select.login-modern-input:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238d6748' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
 }
 
 .login-modern-check {
   margin-left: 0.5rem;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+}
+.login-modern-check svg {
+  width: 18px;
+  height: 18px;
 }
 .login-modern-check svg circle {
   fill: var(--brown);
@@ -2398,88 +2422,118 @@ html, body, #root {
   background: none;
   border: none;
   position: absolute;
-  right: 0.5rem;
+  right: 0.3rem;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  padding: 0;
+  padding: 0.3rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   z-index: 2;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.login-modern-eye:hover {
+  background: rgba(141, 103, 72, 0.1);
 }
 .login-modern-eye svg {
   stroke: var(--brown) !important;
+  width: 18px;
+  height: 18px;
 }
 
 .login-modern-remember-row {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
-  font-size: 0.98rem;
-  color: #bbb;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #999;
+  margin-top: -0.3rem;
 }
 .login-modern-checkbox {
   margin-right: 0.5rem;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
 }
 .login-modern-remember-label {
-  color: #bbb;
-  font-size: 0.98rem;
+  color: #999;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
 }
 .login-modern-btn {
-  width: 180px;
-  background: var(--brown);
+  width: 100%;
+  max-width: 200px;
+  background: linear-gradient(135deg, var(--brown) 0%, #a67c52 100%);
   color: #fff;
   border: none;
-  border-radius: 2rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  padding: 0.9rem 0;
-  margin: 1.2rem 0 0.7rem 0;
-  box-shadow: 0 2px 12px #bfae9e33;
+  border-radius: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  margin: 0.8rem 0 0.5rem 0;
+  box-shadow: 0 4px 12px rgba(141, 103, 72, 0.3);
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: all 0.25s ease;
   align-self: center;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 .login-modern-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
-.login-modern-btn:hover {
-  background: #8d6748;
-  box-shadow: 0 4px 16px #bfae9e44;
+.login-modern-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #8d6748 0%, #9a6f4a 100%);
+  box-shadow: 0 6px 18px rgba(141, 103, 72, 0.4);
+  transform: translateY(-1px);
+}
+.login-modern-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(141, 103, 72, 0.3);
 }
 .login-modern-bottom-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  justify-content: center; /* center content */
-  width: 100%; /* take full width */
-  margin-bottom: 1.2rem; /* added spacing at bottom */
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
 }
 .login-modern-no-account {
-  color: #bbb;
+  color: #999;
 }
 .login-modern-link {
   background: none;
   border: none;
-  color: #00bcd4;
-  text-decoration: underline;
+  color: var(--brown);
+  text-decoration: none;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: 0.85rem;
+  font-weight: 600;
   padding: 0;
-  transition: color 0.2s;
+  transition: color 0.2s, text-decoration 0.2s;
+  position: relative;
 }
 .login-modern-link:hover {
-  color: #1de9b6;
+  color: #8d6748;
+  text-decoration: underline;
 }
 .login-modern-error {
   width: 100%;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(244, 67, 54, 0.1);
+  border-left: 3px solid #f44336;
+  border-radius: 4px;
+  color: #d32f2f;
+  text-align: left;
 }
 @media (max-width: 900px) {
   .login-modern-split {
@@ -2499,34 +2553,138 @@ html, body, #root {
     max-width: 98vw;
     padding: 0 1rem;
   }
+  .login-modern-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  .login-modern-field {
+    margin-bottom: 0.85rem;
+  }
+  .login-modern-input {
+    font-size: 0.95rem;
+    padding: 0.6rem 0;
+  }
+  .login-modern-btn {
+    padding: 0.7rem 1.3rem;
+    font-size: 0.9rem;
+  }
 }
 
 /* Adjust top padding and inter-field spacing for modern forms */
 .login-modern-form {
-  padding-top: 1.6rem; /* add space from very top */
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
 }
 .login-modern-field {
-  margin-bottom: 1.05rem; /* reduce spacing between fields */
+  margin-bottom: 0.95rem;
 }
 
-/* Signup page compact adjustments */
+/* Enhanced compact styling for both login and signup */
+.login-modern-split.compact-layout .login-modern-form {
+  max-width: 380px;
+  padding: 0 1.8rem;
+  padding-top: 0.8rem;
+}
+.login-modern-split.compact-layout .login-modern-field {
+  margin-bottom: 0.8rem;
+}
+.login-modern-split.compact-layout .login-modern-input {
+  font-size: 0.95rem;
+  padding: 0.6rem 0;
+  min-height: 2rem;
+}
+.login-modern-split.compact-layout .login-modern-btn {
+  margin-top: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.9rem;
+}
+.login-modern-split.compact-layout .login-modern-title {
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+}
+.login-modern-split.compact-layout .login-modern-label {
+  font-size: 0.85rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Signup page specific compact adjustments */
 .signup-compact .login-modern-form {
-  max-width: 400px;
-  padding-top: 1rem;
+  max-width: 380px;
+  padding: 0 1.8rem;
+  padding-top: 0.8rem;
 }
 .signup-compact .login-modern-field {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
 }
 .signup-compact .login-modern-input {
-  font-size: 1.18rem;
-  padding: 0.7rem 0;
-  min-height: 2.2rem;
+  font-size: 0.95rem;
+  padding: 0.6rem 0;
+  min-height: 2rem;
 }
 .signup-compact .login-modern-btn {
-  margin-top: 0.7rem;
+  margin-top: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.9rem;
 }
 .signup-compact .login-modern-title {
-  margin-bottom: 1.6rem;
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+}
+.signup-compact .login-modern-label {
+  font-size: 0.85rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Skills section styling for signup page */
+.login-modern-field .login-modern-label + div[style*="display: flex"] {
+  gap: 0.4rem !important;
+  margin-bottom: 0.4rem !important;
+}
+.login-modern-field span[style*="background: var(--beige)"] {
+  background: linear-gradient(135deg, rgba(141, 103, 72, 0.1) 0%, rgba(191, 174, 158, 0.15) 100%) !important;
+  color: var(--brown) !important;
+  border-radius: 1rem !important;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  border: 1px solid rgba(141, 103, 72, 0.2) !important;
+}
+.login-modern-field span[style*="background: var(--beige)"] button {
+  margin-left: 0 !important;
+  font-size: 1.1rem !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  transition: background 0.2s !important;
+}
+.login-modern-field span[style*="background: var(--beige)"] button:hover {
+  background: rgba(141, 103, 72, 0.2) !important;
+}
+.login-modern-field button[style*="background: #f3f3f3"] {
+  background: #f8f9fa !important;
+  color: #555 !important;
+  border: 1px solid #e0e3ea !important;
+  border-radius: 0.9rem !important;
+  padding: 0.3rem 0.7rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  margin-bottom: 0 !important;
+  transition: all 0.2s !important;
+}
+.login-modern-field button[style*="background: #f3f3f3"]:hover {
+  background: rgba(141, 103, 72, 0.1) !important;
+  border-color: var(--brown) !important;
+  color: var(--brown) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Left split image styling for modern layout */

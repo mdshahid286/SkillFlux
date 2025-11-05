@@ -1948,7 +1948,7 @@ function LoginPage({ onLogin, onNav }) {
             <label htmlFor="remember-me" className="login-modern-remember-label">Agree to remember the password.</label>
           </div>
           {error && <div className="form-error login-modern-error">{error}</div>}
-          <button className="login-modern-btn" type="submit" disabled={loading}>{loading ? 'Logging in...' : 'SIGN UP'}</button>
+          <button className="login-modern-btn" type="submit" disabled={loading}>{loading ? 'Logging in...' : 'LOGIN'}</button>
           <div className="login-modern-bottom-row">
             <span className="login-modern-no-account">No account?</span>
             <button type="button" className="login-modern-link" onClick={() => onNav('/signup')}>Sign up</button>
@@ -2197,7 +2197,6 @@ function SignupPage({ onLogin, onNav }) {
                 onChange={handleChange}
                 required
                 className="login-modern-input"
-                style={{ borderBottom: '2px solid #e0e3ea', background: 'transparent', color: '#222', fontWeight: 600 }}
               >
                 <option value="">Select education</option>
                 <option value="High School">High School</option>
@@ -2217,7 +2216,6 @@ function SignupPage({ onLogin, onNav }) {
                 onChange={handleChange}
                 required
                 className="login-modern-input"
-                style={{ borderBottom: '2px solid #e0e3ea', background: 'transparent', color: '#222', fontWeight: 600 }}
               >
                 <option value="">Select role</option>
                 <option value="Student">Student</option>
@@ -2250,16 +2248,18 @@ function SignupPage({ onLogin, onNav }) {
           </div>
           <div className="login-modern-field">
             <label className="login-modern-label">Skills</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.5rem' }}>
-              {form.skills.map(skill => (
-                <span key={skill} style={{ background: 'var(--beige)', color: 'var(--brown)', borderRadius: '1.2rem', padding: '0.25rem 0.9rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', marginBottom: '0.2rem' }}>
-                  {skill} <button type="button" style={{ marginLeft: 6, background: 'none', border: 'none', color: 'var(--brown)', cursor: 'pointer', fontSize: '1.05rem' }} onClick={() => handleRemoveSkill(skill)}>&times;</button>
-                </span>
-              ))}
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.5rem' }}>
+            {form.skills.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                {form.skills.map(skill => (
+                  <span key={skill} style={{ background: 'var(--beige)', color: 'var(--brown)', borderRadius: '1rem', padding: '0.35rem 0.75rem', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', border: '1px solid rgba(141, 103, 72, 0.2)' }}>
+                    {skill} <button type="button" style={{ background: 'none', border: 'none', color: 'var(--brown)', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1, padding: 0, width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }} onClick={() => handleRemoveSkill(skill)}>&times;</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.4rem' }}>
               {skillsList.filter(s => !form.skills.includes(s)).slice(0, 8).map(s => (
-                <button type="button" key={s} style={{ background: '#f3f3f3', color: '#333', border: '1px solid #ccc', borderRadius: '1.2rem', padding: '0.25rem 1rem', fontSize: '1.05rem', cursor: 'pointer', marginBottom: '0.2rem' }} onClick={() => handleAddSkill(s)}>{s}</button>
+                <button type="button" key={s} style={{ background: '#f8f9fa', color: '#555', border: '1px solid #e0e3ea', borderRadius: '0.9rem', padding: '0.3rem 0.7rem', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer' }} onClick={() => handleAddSkill(s)}>{s}</button>
               ))}
             </div>
             <input type="text" name="skillInput" placeholder="Add custom skill..." value={form.skillInput} onChange={handleSkillInput} onKeyDown={handleSkillInputKeyDown} className="login-modern-input" />
