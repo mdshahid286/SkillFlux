@@ -729,13 +729,13 @@ function SocialProof() {
   );
 }
 
-function BigCTA({ onSeeHowItWorks }) {
+function BigCTA({ onSeeHowItWorks, onNav, user }) {
   return (
     <section className="big-cta">
       <h2>Ready to Unlock Your Career Potential?</h2>
       <p>Get your personalized learning roadmap in minutes.</p>
       <div className="cta-btn-row">
-        <button className="primary-btn">Start Free</button>
+        <button className="primary-btn" onClick={() => onNav && onNav(user ? '/onboarding' : '/login')}>Start Free</button>
         <button className="outline-btn" onClick={onSeeHowItWorks}>See How It Works</button>
       </div>
     </section>
@@ -2323,7 +2323,7 @@ function App() {
           <HowItWorks ref={howItWorksRef} />
           <FeatureGrid />
           <SocialProof />
-          <BigCTA onSeeHowItWorks={handleSeeHowItWorks} />
+          <BigCTA onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
           <Footer />
         </div>
       } />
