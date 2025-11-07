@@ -17,11 +17,29 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000', // Local development
   process.env.FRONTEND_URL, // Production frontend URL from env
+  'https://skillflux.netlify.app', // Netlify frontend (hardcoded for now)
 ].filter(Boolean); // Remove undefined values
 
+// Log CORS configuration for debugging
+console.log('🌐 CORS Allowed Origins:', allowedOrigins.length > 0 ? allowedOrigins : 'ALL (development mode)');
+console.log('🌐 FRONTEND_URL from env:', process.env.FRONTEND_URL || 'NOT SET');
+
 app.use(cors({
-  origin: allowedOrigins.length > 0 ? allowedOrigins : true, // Allow all if no specific origins set
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn('🚫 CORS blocked origin:', origin);
+      callback(null, true); // Allow all for now, but log it
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
