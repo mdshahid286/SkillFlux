@@ -33,7 +33,8 @@ export default function ResumeAnalysis() {
         async (parsedData) => {
           try {
             // Send parsed resume data to server for ATS analysis
-            const response = await fetch('/api/analyze-resume', {
+            const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+            const response = await fetch(`${baseUrl}/api/analyze-resume`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
