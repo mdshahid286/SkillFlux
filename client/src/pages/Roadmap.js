@@ -49,7 +49,8 @@ export default function Roadmap() {
     setError('');
     try {
       // 1) Try to load saved plan from backend (Firestore)
-      const saved = await fetch(`http://localhost:5000/api/user/${currentUid}/plan`);
+      const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+      const saved = await fetch(`${baseUrl}/api/user/${currentUid}/plan`);
       let weeks = [];
       let resources = {};
       if (saved.ok) {
@@ -74,7 +75,8 @@ export default function Roadmap() {
       // 2) If no saved roadmap, generate one using the correct endpoint
       if (!weeks.length) {
         console.log('[Roadmap] No saved roadmap found, generating new one...');
-        const res = await fetch('http://localhost:5000/api/generate-roadmap', {
+        const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+        const res = await fetch(`${baseUrl}/api/generate-roadmap`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ uid: currentUid })
@@ -158,7 +160,8 @@ export default function Roadmap() {
     });
 
     try {
-      const resp = await fetch('http://localhost:5000/api/progress', {
+      const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+      const resp = await fetch(`${baseUrl}/api/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid, week: weekIndex + 1, topic: moduleName, type: 'module', completed: true })

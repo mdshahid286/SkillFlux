@@ -12,20 +12,49 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// CORS configuration - allow requests from frontend domains
+const allowedOrigins = [
+  'http://localhost:3000', // Local development
+  process.env.FRONTEND_URL, // Production frontend URL from env
+].filter(Boolean); // Remove undefined values
+
+app.use(cors({
+  origin: allowedOrigins.length > 0 ? allowedOrigins : true, // Allow all if no specific origins set
+  credentials: true
+}));
 app.use(express.json());
 
 // Initialize Firebase Admin SDK
-// You should provide the path to your service account key JSON in .env as GOOGLE_APPLICATION_CREDENTIALS
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+// Supports both local development (file path) and production (environment variable)
+let serviceAccount;
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  // For production (Render/Railway) - use environment variable
+  try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.log('Firebase Admin: Using service account from environment variable');
+  } catch (error) {
+    console.error('Error parsing FIREBASE_SERVICE_ACCOUNT:', error.message);
+  }
+} else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  // For local development - use file path
+  try {
+    serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    console.log('Firebase Admin: Using service account from file');
+  } catch (error) {
+    console.error('Error loading service account file:', error.message);
+  }
+}
+
+if (serviceAccount) {
   admin.initializeApp({
-    credential: admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS)),
+    credential: admin.credential.cert(serviceAccount),
   });
   // Ignore undefined properties to avoid Firestore errors on optional fields
   admin.firestore().settings({ ignoreUndefinedProperties: true });
-  console.log('Firebase Admin initialized');
+  console.log('Firebase Admin initialized successfully');
 } else {
-  console.warn('GOOGLE_APPLICATION_CREDENTIALS not set. Firebase Admin not initialized.');
+  console.warn('Firebase Admin not initialized. Set FIREBASE_SERVICE_ACCOUNT or GOOGLE_APPLICATION_CREDENTIALS');
 }
 
 app.get('/', (req, res) => {

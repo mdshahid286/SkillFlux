@@ -27,7 +27,8 @@ function Navbar({ onSeeHowItWorks, onNav, user }) {
     const fetchProfile = async () => {
       if (!user?.uid) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/user/${user.uid}/plan`);
+        const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+        const res = await fetch(`${baseUrl}/api/user/${user.uid}/plan`);
         const data = await res.json();
         if (!abort && res.ok) setProfile(data.profile || {});
       } catch {}
@@ -48,8 +49,8 @@ function Navbar({ onSeeHowItWorks, onNav, user }) {
         {user ? (
           <>
             <a href="/" onClick={e => {e.preventDefault(); onNav('/');}}>Home</a>
-            <a href="/resume" onClick={e => {e.preventDefault(); onNav('/resume');}}>Resume Analysis</a>
             <a href="/resume-builder" onClick={e => {e.preventDefault(); onNav('/resume-builder');}}>Resume Builder</a>
+            <a href="/resume" onClick={e => {e.preventDefault(); onNav('/resume');}}>Resume Analysis</a>
             <a href="/roadmap" onClick={e => {e.preventDefault(); onNav('/roadmap');}}>Roadmap</a>
             <a href="/news" onClick={e => {e.preventDefault(); onNav('/news');}}>Tech News</a>
             {/* Learning Hub and Progress removed */}
@@ -133,9 +134,10 @@ function Navbar({ onSeeHowItWorks, onNav, user }) {
                           const value = draft[field.key];
                           if (field.key==='skills') body.skills = String(value||'').split(',').map(s=>s.trim()).filter(Boolean); else body[field.key]=value||'';
                           try{
-                            const res = await fetch('http://localhost:5000/api/onboarding',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+                            const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+                            const res = await fetch(`${baseUrl}/api/onboarding`,{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
                             const dat = await res.json(); if(!res.ok) throw new Error(dat.error||'Save failed');
-                            const r = await fetch(`http://localhost:5000/api/user/${user?.uid}/plan`); const d = await r.json(); if(r.ok) setProfile(d.profile||{});
+                            const r = await fetch(`${baseUrl}/api/user/${user?.uid}/plan`); const d = await r.json(); if(r.ok) setProfile(d.profile||{});
                             setEditing(prev=>({...prev,[field.key]:false}));
                           }catch(e){ console.warn('save error', e.message); }
                         }} style={{background:'var(--brown)', color:'#fff', border:'none', padding:'0.55rem 0.9rem', borderRadius:'0.6rem', fontWeight:700, cursor:'pointer', boxShadow:'0 6px 16px rgba(141,103,72,0.35)'}}>Save</button>
@@ -265,8 +267,8 @@ function QuickNav({ onNav }) {
       <h2 style={{ textAlign:'center', margin:'0 0 1.6rem 0', color:'var(--brown)', letterSpacing:'0.06em', fontSize:'1.8rem', animation:'sectionTitleSlide 1s ease-out' }}>QUICK ACTIONS</h2>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,minmax(260px,1fr))', gap:'1.2rem', maxWidth:1200, margin:'0 auto' }}>
         {[
-          { label:'Resume Analysis', path:'/resume' },
           { label:'Resume Builder', path:'/resume-builder' },
+          { label:'Resume Analysis', path:'/resume' },
           { label:'Generate Plan', path:'/onboarding' },
           { label:'Roadmap', path:'/roadmap' },
           { label:'Tech News', path:'/news' },
@@ -505,7 +507,7 @@ function AboutUs() {
 function FeatureGrid() {
   const features = [
     { 
-      title: 'AI-Powered Resume Analysis', 
+      title: 'AI-Powered Resume Builder and Analysis', 
       desc: 'Get instant ATS scoring and detailed feedback on your resume using advanced AI technology. Identify strengths, weaknesses, and actionable improvements.',
       icon: (
         <svg width="48" height="48" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#8d6748" strokeWidth="3" fill="#f5f5f3" /><path d="M12 20h16" stroke="#8d6748" strokeWidth="3" strokeLinecap="round" /><path d="M12 14h10" stroke="#bfae9e" strokeWidth="3" strokeLinecap="round" /></svg>
@@ -862,8 +864,8 @@ function Footer() {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {[
                 { label: 'Home', path: '/' },
-                { label: 'Resume Analysis', path: '/resume' },
                 { label: 'Resume Builder', path: '/resume-builder' },
+                { label: 'Resume Analysis', path: '/resume' },
                 { label: 'Learning Roadmap', path: '/roadmap' },
                 { label: 'Tech News', path: '/news' },
                 { label: 'Aptitude Tests', path: '/aptitude' }
@@ -1081,7 +1083,8 @@ function OnboardingPage({ user }) {
     delete formData.customSkill; // Remove the custom skill field as it's now merged
     
     try {
-      const res = await fetch('http://localhost:5000/api/onboarding', {
+      const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/onboarding`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, uid })
@@ -1090,7 +1093,7 @@ function OnboardingPage({ user }) {
       if (!res.ok) throw new Error(data.error || 'Failed to save onboarding data');
       
       try {
-        const gen = await fetch('http://localhost:5000/api/generate-roadmap', {
+        const gen = await fetch(`${baseUrl}/api/generate-roadmap`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ uid })
@@ -2032,7 +2035,8 @@ function SignupPage({ onLogin, onNav }) {
       }
 
       // Persist profile via backend (Admin SDK) to avoid client Firestore rule issues
-      const resp = await fetch('http://localhost:5000/api/onboarding', {
+      const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
+      const resp = await fetch(`${baseUrl}/api/onboarding`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
