@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text } from '@react-pdf/renderer';
-import { styles, spacing } from './styles';
-import { ResumePDFLink, ResumePDFText } from './common';
+import { styles } from './styles';
 
 export const ResumePDFProfile = ({ profile, themeColor, baseFontPt = 11 }) => {
   const { name, email, phone, url, summary, location } = profile;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from '@react-pdf/renderer';
-import { styles, spacing } from './styles';
+import { styles } from './styles';
 import { ResumePDFSection, ResumePDFBulletList } from './common';
 
 export const ResumePDFSkills = ({

@@ -26,7 +26,7 @@ export const ResumeForm = () => {
   useSaveStateToLocalStorageOnChange();
 
   const formsOrder = useAppSelector(selectFormsOrder);
-  const [isHover, setIsHover] = useState(false);
+  // const [isHover, setIsHover] = useState(false); // Unused
 
   return (
     <div

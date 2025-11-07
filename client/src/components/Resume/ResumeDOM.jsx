@@ -19,7 +19,7 @@ export default function ResumeDOM({ resume, settings }) {
 	}, [fontSize]);
 
 	const hRule = { borderBottom: '1px solid #e5e7eb' };
-	const sky = '#38bdf8';
+	// const sky = '#38bdf8'; // Unused
 	const headingStyle = {
 		fontSize: baseFontPx - 1,
 		fontWeight: 800,
@@ -35,9 +35,9 @@ export default function ResumeDOM({ resume, settings }) {
 	const line = { display: 'flex', gap: 10, alignItems: 'flex-start', color: '#111827' };
 	const muted = { color: '#64748b' };
 
-	const FieldBold = ({ children }) => (
-		<span style={{ fontWeight: 700, color: '#111827' }}>{children}</span>
-	);
+	// const FieldBold = ({ children }) => (
+	// 	<span style={{ fontWeight: 700, color: '#111827' }}>{children}</span>
+	// ); // Unused
 
 	const Section = ({ title, children }) => (
 		<div style={sectionWrapperStyle}>

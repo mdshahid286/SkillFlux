@@ -1,8 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './App.css';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
-import { auth as firebaseAuth, db, storage } from './firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth as firebaseAuth, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import ResumeAnalysis from './pages/ResumeAnalysis';
@@ -15,7 +14,6 @@ import Roadmap from './pages/Roadmap';
 import Aptitude from './pages/Aptitude';
 
 function Navbar({ onSeeHowItWorks, onNav, user }) {
-  const [open, setOpen] = React.useState(false); // quick dropdown (unused now)
   const [showProfileModal, setShowProfileModal] = React.useState(false);
   const [profile, setProfile] = React.useState(null);
   const [editing, setEditing] = React.useState({});
@@ -578,11 +576,10 @@ function FeatureGrid() {
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h2 style={{ 
           textAlign: 'center', 
-          marginBottom: '1rem', 
+          marginBottom: '2rem', 
           color: 'var(--brown)', 
           fontSize: '2.2rem', 
-          letterSpacing: '0.08em',
-          marginBottom: '2rem'
+          letterSpacing: '0.08em'
         }}>FEATURES</h2>
         <p style={{ 
           textAlign: 'center', 
@@ -789,7 +786,7 @@ function Footer() {
               Your AI-powered career companion. Personalized learning pathways, resume analysis, and professional development tools.
             </p>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <a href="#" style={{ 
+              <button type="button" aria-label="Facebook" style={{ 
                 width: 40, 
                 height: 40, 
                 borderRadius: '50%', 
@@ -797,7 +794,9 @@ function Footer() {
                 display: 'grid',
                 placeItems: 'center',
                 transition: 'all 0.3s',
-                border: '1px solid rgba(230,222,215,0.2)'
+                border: '1px solid rgba(230,222,215,0.2)',
+                cursor: 'pointer',
+                padding: 0
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(230,222,215,0.2)';
@@ -808,8 +807,8 @@ function Footer() {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}>
                 <svg width="20" height="20" fill="#e6ded7" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              </a>
-              <a href="#" style={{ 
+              </button>
+              <button type="button" aria-label="Twitter" style={{ 
                 width: 40, 
                 height: 40, 
                 borderRadius: '50%', 
@@ -828,8 +827,8 @@ function Footer() {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}>
                 <svg width="20" height="20" fill="#e6ded7" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-              </a>
-              <a href="#" style={{ 
+              </button>
+              <button type="button" aria-label="LinkedIn" style={{ 
                 width: 40, 
                 height: 40, 
                 borderRadius: '50%', 
@@ -837,7 +836,9 @@ function Footer() {
                 display: 'grid',
                 placeItems: 'center',
                 transition: 'all 0.3s',
-                border: '1px solid rgba(230,222,215,0.2)'
+                border: '1px solid rgba(230,222,215,0.2)',
+                cursor: 'pointer',
+                padding: 0
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(230,222,215,0.2)';
@@ -848,7 +849,7 @@ function Footer() {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}>
                 <svg width="20" height="20" fill="#e6ded7" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-              </a>
+              </button>
             </div>
           </div>
 
@@ -952,38 +953,50 @@ function Footer() {
               </li>
             </ul>
             <div style={{ marginTop: '2rem' }}>
-              <a href="#" style={{
+              <button type="button" style={{
                 color: '#b0b0b0',
                 textDecoration: 'none',
                 fontSize: '0.9rem',
                 marginRight: '1.5rem',
-                transition: 'color 0.3s'
+                transition: 'color 0.3s',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0
               }}
               onMouseEnter={(e) => e.currentTarget.style.color = '#e6ded7'}
               onMouseLeave={(e) => e.currentTarget.style.color = '#b0b0b0'}>
                 Privacy Policy
-              </a>
-              <a href="#" style={{
+              </button>
+              <button type="button" style={{
                 color: '#b0b0b0',
                 textDecoration: 'none',
                 fontSize: '0.9rem',
                 marginRight: '1.5rem',
-                transition: 'color 0.3s'
+                transition: 'color 0.3s',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0
               }}
               onMouseEnter={(e) => e.currentTarget.style.color = '#e6ded7'}
               onMouseLeave={(e) => e.currentTarget.style.color = '#b0b0b0'}>
                 Terms of Service
-              </a>
-              <a href="#" style={{
+              </button>
+              <button type="button" style={{
                 color: '#b0b0b0',
                 textDecoration: 'none',
                 fontSize: '0.9rem',
-                transition: 'color 0.3s'
+                transition: 'color 0.3s',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0
               }}
               onMouseEnter={(e) => e.currentTarget.style.color = '#e6ded7'}
               onMouseLeave={(e) => e.currentTarget.style.color = '#b0b0b0'}>
                 Cookie Policy
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -1805,19 +1818,20 @@ function LoginPage({ onLogin, onNav }) {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      onLogin();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Google login handler (currently unused but kept for future use)
+  // const handleGoogleLogin = async () => {
+  //   setLoading(true);
+  //   setError('');
+  //   try {
+  //     const provider = new GoogleAuthProvider();
+  //     await signInWithPopup(auth, provider);
+  //     onLogin();
+  //   } catch (err) {
+  //     setError(err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="login-modern-split">

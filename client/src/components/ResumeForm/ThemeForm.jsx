@@ -39,7 +39,7 @@ const DOCUMENT_SIZES = [
 export const ThemeForm = () => {
   const settings = useAppSelector(selectSettings);
   const { fontSize, fontFamily, documentSize } = settings;
-  const themeColor = settings.themeColor || DEFAULT_THEME_COLOR;
+  // const themeColor = settings.themeColor || DEFAULT_THEME_COLOR; // Unused
   const dispatch = useAppDispatch();
 
   const handleSettingsChange = (field, value) => {

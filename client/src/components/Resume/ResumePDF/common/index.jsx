@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, Link } from '@react-pdf/renderer';
-import { styles, spacing } from '../styles';
+import { styles } from '../styles';
 
 export const ResumePDFSection = ({ themeColor, heading, children }) => {
   return (

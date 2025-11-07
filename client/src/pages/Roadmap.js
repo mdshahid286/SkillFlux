@@ -42,6 +42,7 @@ export default function Roadmap() {
 
   useEffect(() => {
     if (uid) fetchRoadmapData(uid);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid]);
 
   const fetchRoadmapData = async (currentUid) => {
