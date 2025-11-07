@@ -63,10 +63,7 @@ export default function Roadmap() {
           setUserProfile(d.profile);
           // Extract onboarding data from profile
           if (d.profile.onboarding) {
-            console.log('[Roadmap] Found onboarding data:', d.profile.onboarding);
             setOnboardingData(d.profile.onboarding);
-          } else {
-            console.log('[Roadmap] No onboarding data found in profile');
           }
         }
         const summary = d?.aiPlan?.analysis?.summary || '';
@@ -75,7 +72,6 @@ export default function Roadmap() {
 
       // 2) If no saved roadmap, generate one using the correct endpoint
       if (!weeks.length) {
-        console.log('[Roadmap] No saved roadmap found, generating new one...');
         const baseUrl = process.env.REACT_APP_API_BASE_URL || '';
         const res = await fetch(`${baseUrl}/api/generate-roadmap`, {
           method: 'POST',
@@ -84,7 +80,6 @@ export default function Roadmap() {
         });
         if (res.ok) {
           const data = await res.json();
-          console.log('[Roadmap] Generated roadmap data:', data);
           weeks = Array.isArray(data.roadmap) ? data.roadmap : [];
           resources = data.resources || {};
           // Update profile with generated data

@@ -4,7 +4,6 @@ import { InputGroupWrapper } from './Form/InputGroup';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import {
   changeSettings,
-  DEFAULT_THEME_COLOR,
   selectSettings
 } from '../../redux/settingsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
