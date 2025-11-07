@@ -14,6 +14,14 @@ const getApiUrl = () => {
 
 export const API_BASE_URL = getApiUrl();
 
+// Debug: Log API URL in development (helps verify connection)
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔗 API Base URL:', API_BASE_URL || 'Using proxy (localhost:5000)');
+} else {
+  // In production, log once to help debug
+  console.log('🔗 API Base URL:', API_BASE_URL || '⚠️ NOT SET - API calls will fail!');
+}
+
 // Helper function to make API calls
 export const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
