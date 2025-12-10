@@ -82,15 +82,13 @@ function StoryBasedQuickActions({ onNav }) {
   ];
 
   useEffect(() => {
-    setIsVisible(true);
-    
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 }
     );
 
     const currentRef = sectionRef.current;
@@ -98,7 +96,11 @@ function StoryBasedQuickActions({ onNav }) {
       observer.observe(currentRef);
     }
 
+    // Fallback: ensure visibility if observer never fires (older browsers)
+    const timeout = setTimeout(() => setIsVisible(true), 1200);
+
     return () => {
+      clearTimeout(timeout);
       if (currentRef) {
         observer.unobserve(currentRef);
       }
@@ -106,7 +108,9 @@ function StoryBasedQuickActions({ onNav }) {
   }, []);
 
   const handleActionClick = (path) => {
-    onNav(path);
+    if (onNav && path) {
+      onNav(path);
+    }
   };
 
   const toggleExpand = (index) => {
@@ -114,10 +118,9 @@ function StoryBasedQuickActions({ onNav }) {
   };
 
   return (
-    <section ref={sectionRef} className="story-quick-actions-modern">
+    <section ref={sectionRef} className={`story-quick-actions-modern ${isVisible ? 'visible' : ''}`}>
       <div className="story-qa-modern-container">
         <div className="story-header-section">
-          <h2 className="story-qa-modern-title">Questions That Lead to Solutions</h2>
           <p className="story-qa-modern-subtitle">
             Every great career journey starts with the right questions. Click to explore answers.
           </p>
@@ -181,9 +184,13 @@ function StoryBasedQuickActions({ onNav }) {
                         <p className="answer-text">{action.answer}</p>
                         <button
                           className="answer-action-btn"
+                          type="button"
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
-                            handleActionClick(action.path);
+                            if (onNav && action.path) {
+                              handleActionClick(action.path);
+                            }
                           }}
                         >
                           <span>Explore {action.id.replace('-', ' ')}</span>

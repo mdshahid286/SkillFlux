@@ -366,146 +366,89 @@ function AboutUs() {
   ];
 
   return (
-    <section className="about-us" style={{ padding: '4rem 1rem', background: 'linear-gradient(180deg, #f5f5f3 0%, #ffffff 100%)', position: 'relative', overflow: 'hidden' }}>
+    <section className="about-us" style={{ padding: '3.5rem 1rem 4rem', background: '#fff', position: 'relative' }}>
       <style>{`
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
+          from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .about-us::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, var(--brown), transparent);
+        .about-card {
+          background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+          border: 1px solid rgba(141, 103, 72, 0.12);
+          border-radius: 1.2rem;
+          padding: 1.35rem 1.25rem;
+          box-shadow: 0 14px 36px rgba(0,0,0,0.06);
+          display: flex;
+          gap: 1rem;
+          align-items: flex-start;
+          animation: fadeInUp 0.7s ease-out both;
+        }
+        .about-card + .about-card { margin-top: 1rem; }
+        .about-card-icon {
+          width: 52px; height: 52px; border-radius: 14px;
+          background: linear-gradient(135deg, var(--brown), #bfae9e);
+          display: grid; place-items: center;
+          box-shadow: 0 10px 22px rgba(141,103,72,0.25);
+          flex-shrink: 0;
+        }
+        .about-card-title {
+          color: #7a623f;
+          font-size: 0.9rem;
+          letter-spacing: 0.14em;
+          font-weight: 800;
+          margin-bottom: 0.35rem;
+        }
+        .about-card-desc {
+          color: #4a3a29;
+          font-size: 1.02rem;
+          line-height: 1.55;
+        }
+        @media (max-width: 640px) {
+          .about-us {
+            padding: 2.5rem 0.8rem 3rem !important;
+          }
+          .about-card {
+            padding: 1.05rem 1rem;
+            border-radius: 1rem;
+          }
+          .about-card-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+          }
+          .about-card-title {
+            font-size: 0.82rem;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.3rem;
+          }
+          .about-card-desc {
+            font-size: 0.98rem;
+            line-height: 1.5;
+          }
+          .about-us h2 {
+            font-size: 1.6rem !important;
+            margin-bottom: 1.4rem !important;
+          }
         }
       `}</style>
-      <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative' }}>
+      <div style={{ maxWidth: 820, margin: '0 auto' }}>
         <h2 style={{ 
           textAlign: 'center', 
-          marginBottom: '3rem', 
+          marginBottom: '2rem', 
           color: 'var(--brown)', 
-          fontSize: '2.2rem', 
+          fontSize: '2rem', 
           letterSpacing: '0.08em',
-          animation: 'fadeInUp 0.8s ease-out'
+          animation: 'fadeInUp 0.7s ease-out'
         }}>ABOUT US</h2>
-        
-        {/* Timeline */}
-        <div style={{ position: 'relative', paddingLeft: '2rem', paddingRight: '2rem' }}>
-          {/* Vertical line */}
-          <div style={{
-            position: 'absolute',
-            left: '50%',
-            top: 0,
-            bottom: 0,
-            width: '3px',
-            background: 'linear-gradient(180deg, var(--brown), #bfae9e, var(--brown))',
-            transform: 'translateX(-50%)',
-            zIndex: 0
-          }} />
 
-          {/* Timeline items */}
-          {timelineItems.map((item, index) => {
-            const isLeft = index % 2 === 0;
-            const animationDelay = 0.2 + (index * 0.2);
-            
-            return (
-              <div
-                key={index}
-                style={{
-                  position: 'relative',
-                  display: 'flex',
-                  justifyContent: isLeft ? 'flex-start' : 'flex-end',
-                  marginBottom: '3rem',
-                  animation: `fadeInUp 0.8s ease-out ${animationDelay}s both`,
-                  zIndex: 1
-                }}
-              >
-                <div style={{
-                  width: 'calc(50% - 2rem)',
-                  maxWidth: '450px',
-                  padding: '1.8rem',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
-                  borderRadius: '1rem',
-                  boxShadow: '0 8px 24px rgba(141,103,72,0.15)',
-                  border: '1px solid rgba(141,103,72,0.2)',
-                  position: 'relative',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(141,103,72,0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(141,103,72,0.15)';
-                }}
-                >
-                  {/* Icon */}
-                  <div style={{
-                    position: 'absolute',
-                    [isLeft ? 'right' : 'left']: '-3.5rem',
-                    top: '1.5rem',
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, var(--brown), #bfae9e)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    boxShadow: '0 6px 20px rgba(141,103,72,0.3)',
-                    border: '4px solid #ffffff',
-                    zIndex: 2
-                  }}>
-                    {item.icon}
-                  </div>
-
-                  {/* Connector line to center */}
-                  <div style={{
-                    position: 'absolute',
-                    [isLeft ? 'right' : 'left']: '-2rem',
-                    top: '2.5rem',
-                    width: '1.5rem',
-                    height: '2px',
-                    background: 'var(--brown)',
-                    zIndex: 1
-                  }} />
-
-                  <h3 style={{
-                    color: 'var(--brown)',
-                    fontSize: '1.2rem',
-                    marginBottom: '0.8rem',
-                    fontWeight: 700,
-                    marginTop: '0.5rem'
-                  }}>{item.title}</h3>
-                  <p style={{
-                    color: '#555',
-                    lineHeight: '1.7',
-                    fontSize: '0.95rem',
-                    margin: 0
-                  }}>{item.description}</p>
-                </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {timelineItems.map((item, index) => (
+            <div className="about-card" key={item.title} style={{ animationDelay: `${index * 0.07}s` }}>
+              <div className="about-card-icon">{item.icon}</div>
+              <div style={{ flex: 1 }}>
+                <div className="about-card-title">{item.title}</div>
+                <div className="about-card-desc">{item.description}</div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom summary */}
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '1.5rem', 
-          background: 'linear-gradient(135deg, rgba(191,174,158,0.1) 0%, rgba(230,222,215,0.1) 100%)',
-          borderRadius: '1.2rem',
-          border: '1px solid rgba(141,103,72,0.15)',
-          animation: 'fadeInUp 0.8s ease-out 0.8s both',
-          marginTop: '2rem'
-        }}>
-          <p style={{ color: '#666', fontSize: '1rem', lineHeight: '1.7', maxWidth: 800, margin: '0 auto' }}>
-            <strong style={{ color: 'var(--brown)' }}>SkillFlux</strong> is more than just a platform—it's your career companion. 
-            We understand that everyone's career journey is unique, and we're here to provide the personalized guidance 
-            and resources you need to succeed in today's competitive job market.
-          </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -2346,8 +2289,8 @@ function App() {
         <div className="landing-page">
           <Navbar onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
           <HeroSection onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
-          <AboutUs />
           <StoryBasedQuickActions onNav={handleNav} />
+          <AboutUs />
           <HowItWorks ref={howItWorksRef} />
           <FeatureGrid />
           <SocialProof />
