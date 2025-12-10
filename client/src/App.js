@@ -261,50 +261,6 @@ function HeroSection({ onSeeHowItWorks, onNav, user }) {
   );
 }
 
-function QuickNav({ onNav }) {
-  return (
-    <section className="quick-nav" style={{ position:'relative', padding:'3rem 1rem', overflow:'hidden' }}>
-      <style>{`
-        @keyframes floaty { 0%{transform:translateY(0)} 50%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
-        @keyframes pulseGlow { 0%{box-shadow:0 0 0 0 rgba(141,103,72,0.25)} 70%{box-shadow:0 0 0 16px rgba(141,103,72,0)} 100%{box-shadow:0 0 0 0 rgba(141,103,72,0)} }
-      `}</style>
-      <div style={{
-        position:'absolute', inset:0, background:'radial-gradient(1200px 300px at 20% -10%, #e6ded7 0%, rgba(230,222,215,0) 60%), radial-gradient(1200px 300px at 80% 110%, #bfae9e 0%, rgba(191,174,158,0) 60%)',
-        pointerEvents:'none'
-      }} />
-      <h2 style={{ textAlign:'center', margin:'0 0 1.6rem 0', color:'var(--brown)', letterSpacing:'0.06em', fontSize:'1.8rem', animation:'sectionTitleSlide 1s ease-out' }}>QUICK ACTIONS</h2>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,minmax(260px,1fr))', gap:'1.2rem', maxWidth:1200, margin:'0 auto' }}>
-        {[
-          { label:'Resume Builder', path:'/resume-builder' },
-          { label:'Resume Analysis', path:'/resume' },
-          { label:'Generate Plan', path:'/onboarding' },
-          { label:'Roadmap', path:'/roadmap' },
-          { label:'Tech News', path:'/news' },
-          { label:'Aptitude Prep', path:'/aptitude' },
-        ].map((item, i) => (
-          <button key={item.label} onClick={() => onNav(item.path)}
-            className="quick-nav-btn"
-            style={{
-              background:'linear-gradient(180deg,#ffffff 0%, #f7f7f7 100%)',
-              border:'1px solid #e0e3ea', borderRadius:'1.4rem', padding:'1.6rem 1.2rem',
-              display:'flex', alignItems:'center', justifyContent:'space-between',
-              cursor:'pointer', transition:'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-              boxShadow:'0 14px 36px rgba(0,0,0,0.10)',
-              animation:`quickActionSlide 0.8s ease-out both, floaty 6s ease-in-out infinite`, 
-              animationDelay:`${i * 0.1}s, ${i * 0.12}s`
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-8px) scale(1.05)'; e.currentTarget.style.boxShadow='0 25px 60px rgba(0,0,0,0.2)'; e.currentTarget.style.borderColor = '#d4c8bc'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform='translateY(0) scale(1.0)'; e.currentTarget.style.boxShadow='0 14px 36px rgba(0,0,0,0.10)'; e.currentTarget.style.borderColor = '#e0e3ea'; }}
-          >
-            <span style={{ fontWeight:900, color:'#333', letterSpacing:'0.02em', fontSize:'1.05rem' }}>{item.label}</span>
-            <span style={{ width:44, height:44, borderRadius:'50%', background:'linear-gradient(135deg, var(--brown), #bfae9e)', color:'#fff', display:'grid', placeItems:'center', fontWeight:900, animation:'pulseGlow 2.4s infinite', boxShadow:'0 8px 20px rgba(141,103,72,0.35)' }}>→</span>
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function HowItWorks() {
   return (
     <section className="hiw" id="how-it-works">
