@@ -12,6 +12,16 @@ import Roadmap from './pages/Roadmap';
 // Removed LearningHub and Progress pages
 // Profile page removed; using in-nav modal instead
 import Aptitude from './pages/Aptitude';
+import StorySection from './components/StorySection';
+import SectionTransition from './components/SectionTransition';
+import './components/StorySection.css';
+import './components/SectionTransition.css';
+// (Assume AnimatedOutroCTA will be created next and imported here)
+// ... existing code ...
+import AnimatedOutroCTA from './components/AnimatedOutroCTA';
+import './components/AnimatedOutroCTA.css';
+import StoryBasedQuickActions from './components/StoryBasedQuickActions';
+import './components/StoryBasedQuickActions.css';
 
 function Navbar({ onSeeHowItWorks, onNav, user }) {
   const [showProfileModal, setShowProfileModal] = React.useState(false);
@@ -2337,7 +2347,7 @@ function App() {
           <Navbar onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
           <HeroSection onSeeHowItWorks={handleSeeHowItWorks} onNav={handleNav} user={user} />
           <AboutUs />
-          <QuickNav onNav={handleNav} />
+          <StoryBasedQuickActions onNav={handleNav} />
           <HowItWorks ref={howItWorksRef} />
           <FeatureGrid />
           <SocialProof />
@@ -2345,8 +2355,68 @@ function App() {
           <Footer />
         </div>
       } />
+      <Route path="/" element={<StoryHomePage />} />
     </Routes>
   );
 }
 
 export default App;
+
+// Placeholder for new StoryHomePage at the bottom:
+function StoryHomePage() {
+  // This will be a unique, animated, story-driven landing page
+  // Each section: pain point & story, visual animation, then feature as solution
+  return (
+    <main className="story-home">
+      {/* Story Section 1: The Resume Struggle */}
+      <StorySection
+        title="The Resume Struggle"
+        painPoint="Endless formatting, confusing feedback, getting lost in a sea of templates."
+        narrative="Meet Sam, frustrated after hours tinkering with word processors..."
+        solutionTitle="SkillFlux Resume Builder"
+        solutionDesc="Meet your new superpower—instant ATS-ready resumes, drag&drop sections, realtime preview and theming."
+        animationType="resume-pain-to-builder"
+      />
+      {/* Animation/transition separator */}
+      <SectionTransition type="parallax-fade" />
+      {/* Story Section 2: Growth Uncertainty */}
+      <StorySection
+        title="Lost In Learning?"
+        painPoint="Overwhelmed by courses, not sure what skills matter for your dream job."
+        narrative="Taylor tries dozens of tutorials, but keeps second-guessing every step."
+        solutionTitle="SkillFlux AI Roadmap"
+        solutionDesc="Personalized, AI-powered learning path—right skills, right order, all mapped to your career goal."
+        animationType="ai-roadmap-hero"
+      />
+      <SectionTransition type="step-dissolve" />
+      <StorySection
+        title="Am I Really Ready?"
+        painPoint="Self-doubt before interviews, too much generic advice, no way to benchmark yourself."
+        narrative="Jordan wishes for a personal interview coach to point out real gaps."
+        solutionTitle="SkillFlux Resume Analysis"
+        solutionDesc="Upload or build your resume and get instant, AI-powered feedback and interview tips."
+        animationType="resume-analysis-animated"
+      />
+      <SectionTransition type="slide-split" />
+      <StorySection
+        title="Aptitude Anxiety"
+        painPoint="Dreading reasoning and logic rounds, frustrated with dry practice sites."
+        narrative="Priya can code, but panics at pattern-based questions."
+        solutionTitle="SkillFlux Aptitude Arena"
+        solutionDesc="Interactive, fun practice for logical, quant, verbal, and general career skills—with progress analytics."
+        animationType="aptitude-flipcards"
+      />
+      <SectionTransition type="swirl-scroll" />
+      <StorySection
+        title="Tech Moves Fast"
+        painPoint="Stuck in an information rut, missing the latest trends."
+        narrative="Mina wants to sound up-to-date, but it's hard to curate real news from noise."
+        solutionTitle="SkillFlux Tech News"
+        solutionDesc="Tailored, snackable tech news briefings—stay current and sound smart."
+        animationType="news-fade-slides"
+      />
+      {/* StoryHomePage outro/CTA with light animation */}
+      <AnimatedOutroCTA />
+    </main>
+  );
+}

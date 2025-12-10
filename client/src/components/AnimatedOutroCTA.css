@@ -1,0 +1,47 @@
+.outro-cta {
+  padding: 0 0 5.2rem 0;
+  background: linear-gradient(180deg, #fff 60%, var(--beige) 100%);
+  text-align: center;
+  width: 100vw;
+  min-height: 300px;
+  position: relative;
+}
+.outro-bg-anim { position: absolute; top:0; left:0; width:100%; z-index:0; }
+.outro-content { position: relative; z-index: 2; margin-top: 2.8em; display: flex; flex-direction: column; align-items: center; }
+.outro-headline {
+  color: var(--brown);
+  font-family: 'Orbitron', 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 0.8rem;
+  text-shadow: 0 8px 32px var(--beige);
+}
+.outro-sub {
+  font-size: 1.13rem;
+  color: #7a623f;
+  margin-bottom: 1.7rem;
+  font-weight: 600;
+}
+.outro-btn-glow {
+  padding: 1.07rem 2.7rem;
+  border-radius: 2em;
+  background: linear-gradient(90deg, #8d6748 0%, #bfae9e 90%);
+  font-size: 1.28rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  box-shadow: 0 4px 36px #bfae9e66, 0 0px 9px #efdbca;
+  transition: background 0.25s, transform 0.12s, box-shadow 0.21s;
+  animation: outroBtnGlow 1.7s infinite alternate cubic-bezier(.58,.41,.61,.97);
+}
+.outro-btn-glow:hover {
+  background: linear-gradient(90deg, #bfae9e 20%, #8d6748 100%);
+  box-shadow: 0 8px 72px #bfae9ecc, 0 0px 24px #f5ddb5;
+  transform: scale(1.08);
+}
+@keyframes outroBtnGlow {
+  0% { box-shadow: 0 4px 16px #e6ded7, 0 0px 9px #efdbca; }
+  100% { box-shadow: 0 12px 44px #bfae9e99, 0 0px 30px #efdbca88; }
+}

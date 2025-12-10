@@ -1,0 +1,11 @@
+.section-transition { width: 100%; min-height: 22px; margin: 0 0 0.5rem 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.section-parallax-fade svg { display: block; width: 100%; height: 50px; margin: 0; }
+.transition-step-bar { width: min(48vw, 340px); display: flex; gap: 7px; justify-content: center; }
+.transition-step-bar:before, .transition-step-bar:after, .transition-step-bar div { content: ""; width: 14px; height: 14px; border-radius: 10px; background: var(--brown); opacity: 0.15; animation: stepFadeAnim 1.4s ease-in-out infinite alternate; }
+.transition-step-bar div { animation-delay: 0.23s; }
+.transition-step-bar:before { animation-delay: 0.08s; }
+.transition-step-bar:after { animation-delay: 0.42s; }
+@keyframes stepFadeAnim { 0% { opacity: 0.28;} 100% { opacity: 0.04;} }
+.transition-slide { width: 92vw; height: 10px; border-radius: 6px; background: linear-gradient(90deg, #e6ded7 0%, #8d6748 55%, #e6ded7 100%); animation: slideX 2.4s cubic-bezier(.99,.1,.08,.97) infinite alternate; }
+@keyframes slideX { 0% { background-position: 0 0; } 100% { background-position: 92vw 0; } }
+.section-swirl-scroll svg { width: 100%; height: 34px; display:block; }
